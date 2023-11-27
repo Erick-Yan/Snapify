@@ -1,0 +1,73 @@
+.header {
+    margin: auto;
+    text-align: center;
+    border-bottom: rgb(220, 216, 216) solid;
+    border-bottom-width: 2px;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    width: 100%;
+}
+
+.box {
+    flex: 1;
+    text-align: center;
+    padding: 5px;
+}
+
+.cancel-box {
+    text-decoration: none;
+    flex: 10;
+}
+
+.name-box {
+    flex: 80;
+}
+
+.done-box {
+    text-decoration: none;
+    flex: 10;
+}
+
+.nav-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: -2px;
+}
+  
+.nav-option {
+    cursor: pointer;
+    padding: 10px 20px;
+    margin: 0 10px;
+    text-align: center;
+    color: grey;
+}
+  
+.active {
+    color: black;
+    border-bottom: black solid;
+    border-bottom-width: 2px;
+    z-index: 99
+}
+
+.form {
+    border: 1px solid red;
+    margin-top: 20px;
+}
+
+.form-items {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.profile-photo {
+    height: 300px;
+    width: 300px;
+    border-radius: 15px;
+    margin-right: 8px;
+}

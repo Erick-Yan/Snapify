@@ -7,6 +7,7 @@ import logging
 from flask_cors import CORS
 
 from .blueprints.auth import auth_bp
+from .blueprints.user import user_bp
 
 IS_DEV = environ["FLASK_ENV"] == "development"
 WEBPACK_DEV_SERVER_HOST = "http://localhost:3000"
@@ -53,6 +54,8 @@ def create_app(config_name='production'):
 
     #register all kinds of mudules
     register_blueprints(app)
+    app.register_blueprint(user_bp)
+    app.register_blueprint(auth_bp)
     # register_extensions(app)
     # register_error_handler(app)
     # register_command(app)
@@ -66,11 +69,12 @@ def create_app(config_name='production'):
         return app.send_static_file(path)
 
     app.secret_key = "test_secret_key1"
-    CORS(app)
     return app
 
 def register_blueprints(app):
-    app.register_blueprint(auth_bp)
+    # app.register_blueprint(user_bp)
+    # app.register_blueprint(auth_bp)
+    return
 
 if __name__ == "__main__":
     app = create_app()

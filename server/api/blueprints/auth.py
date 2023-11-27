@@ -8,7 +8,7 @@ import jwt
 # sys.path is a list of absolute path strings
 sys.path.insert(0, "../../api/utils.py")
 sys.path.insert(0, "../../api/wrapper_utils.py")
-from api.utils import createStateKey, getToken, getUserInformation
+from api.utils import createStateKey, getToken, getUserInformation, makePostRequest
 from api.wrapper_utils import login_required
 
 load_dotenv()
@@ -32,7 +32,7 @@ def check_auth():
     token_payload = {
         "user_id": session.get("user_id"), 
         "token": session.get("token"), 
-        "token_expiration": session.get("token_expiration")
+        "token_expiration": session.get("token_expiration") or -1
     }
     token = jwt.encode(token_payload, SECRET_KEY, algorithm='HS256')
     return token, 200
@@ -53,7 +53,7 @@ def login():
 @auth_bp.route("/auth/callback")
 def redirect_page():
     # make sure the response came from Spotify
-    if request.args.get('state') != session['state_key']:
+    if request.args.get('state') != session.get('state_key'):
         logging.error("Failed to Authenticate User: State keys don't match")
         return redirect("http://localhost:5000/app", 400)
     if request.args.get('error'):
@@ -65,6 +65,7 @@ def redirect_page():
             session.pop('state_key', None)
             payload = getToken(code)
             if payload:
+                session["code"] = code
                 session['token'], session['refresh_token'], session['token_expiration'] = payload[0], payload[1], payload[2]
             else:
                 logging.warning("Failed to retrieve token!")
@@ -77,7 +78,7 @@ def redirect_page():
             current_user = getUserInformation(session)
             session["user_id"] = current_user["id"]
             logging.info("New User Log In: " + session["user_id"])
-        except:
+        except Exception as e:
             logging.error("Failed to Authenticate User: Failed to retrieve user info")
             raise e
     

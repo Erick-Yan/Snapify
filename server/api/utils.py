@@ -42,11 +42,21 @@ def getToken(code):
 		return None
 	
 def refreshToken(refresh_token):
+	CLIENT_ID = os.getenv("CLIENT_ID")
+	CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+	auth_string = CLIENT_ID + ":" + CLIENT_SECRET
+	auth_bytes = auth_string.encode("utf-8")
+	auth_base64 = str(base64.b64encode(auth_bytes), "utf-8")
 	token_url = 'https://accounts.spotify.com/api/token'
-	authorization = os.getenv('AUTHORIZATION')
 
-	headers = {'Authorization': authorization, 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded'}
-	body = {'refresh_token': refresh_token, 'grant_type': 'refresh_token'}
+	headers = {
+		"Authorization": "Basic " + auth_base64,
+		'Content-Type': 'application/x-www-form-urlencoded'
+	}
+	body = {
+		"grant_type" : "refresh_token",
+		"refresh_token": refresh_token
+    }
 	post_response = requests.post(token_url, headers=headers, data=body)
 
 	if post_response.status_code == 200:
@@ -83,6 +93,21 @@ def makeGetRequest(session, url, params={}):
 	else:
 		logging.error('makeGetRequest:' + str(response.status_code))
 		return None
+	
+def makePostRequest(session, url, params={}):
+	headers = {
+		"Authorization": "Bearer {}".format(session['token']),
+	}
+	response = requests.post(url, headers=headers, params=params)
+
+	if response.status_code == 200:
+		return True
+
+	elif response.status_code == 401 and checkTokenStatus(session) != None:
+		return makePostRequest(session, url, params)
+	else:
+		logging.error('makePostRequest:' + str(response.status_code))
+		return False
 
 def getUserInformation(session):
 	url = 'https://api.spotify.com/v1/me'

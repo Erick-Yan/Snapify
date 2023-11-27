@@ -1,6 +1,11 @@
 import * as toolkitRaw from '@reduxjs/toolkit';
 
 const { configureStore } = toolkitRaw;
+const defaultToken = {
+    "user_id": null,
+    "token": null,
+    "token_expiration": -1,
+}
 
 const initialState = {
     isLoggedIn: false,
@@ -17,12 +22,12 @@ const handleLoginRequest = (state) => {
 }
 
 const handleLoginSuccess = (state, action) => {
-    const { token } = action.payload
+    const { token } = action?.payload || defaultToken
     return {
         ...state,
         isLoggedIn: true,
         token: token["token"],
-        userId: token["userId"],
+        userId: token["user_id"],
         isLoading: false,
     }
 }
