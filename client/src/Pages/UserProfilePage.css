@@ -12,22 +12,22 @@
     width: 100%;
 }
 
-.box {
+.button {
     flex: 1;
     text-align: center;
     padding: 5px;
 }
 
-.cancel-box {
+.cancel-button {
     text-decoration: none;
     flex: 10;
 }
 
-.name-box {
+.name {
     flex: 80;
 }
 
-.done-box {
+.done-button {
     text-decoration: none;
     flex: 10;
 }
@@ -66,8 +66,8 @@
 }
 
 .profile-photo {
-    height: 300px;
-    width: 300px;
+    height: 200px;
+    width: 200px;
     border-radius: 15px;
     margin-right: 8px;
 }

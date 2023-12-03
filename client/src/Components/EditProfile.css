@@ -1,0 +1,20 @@
+.form {
+    border: 1px solid red;
+    margin-top: 20px;
+}
+
+.form-items {
+    flex: 1;
+    text-align: center;
+    padding: 5px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.profile-photo {
+    height: 200px;
+    width: 200px;
+    border-radius: 15px;
+    margin-right: 8px;
+}

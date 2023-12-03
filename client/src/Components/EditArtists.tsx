@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Modal, TextField, List, ListItem, ListItemSecondaryAction, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, LinearProgress, Stack, makeStyles, Divider } from '@mui/material';
+import { Button, Modal, TextField, List, ListItem, ListItemSecondaryAction, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, LinearProgress, Stack, makeStyles, Divider, Typography } from '@mui/material';
 import { getSpotifyArtist } from "../API Modules/searchSpotifyArtist";
 import './EditItems.css'
 
-function EditArtists() {
+interface EditArtistsProps {
+  handleUpdateArtists: (artists: any) => void
+}
+
+function EditArtists({handleUpdateArtists}: EditArtistsProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -23,12 +27,14 @@ function EditArtists() {
   const handleAddArtist = (item: string) => {
     if (selectedItems.length < 3 && !selectedItems.includes(item)) {
       setSelectedItems([...selectedItems, item]);
+      handleUpdateArtists([...selectedItems, item])
     }
   };
 
   const handleRemoveArtist = (item) => {
     const updatedItems = selectedItems.filter((a) => a !== item);
     setSelectedItems(updatedItems);
+    handleUpdateArtists(updatedItems)
   };
 
   const handleSearch = async () => {
@@ -47,19 +53,20 @@ function EditArtists() {
   return (
     <>
       <div className="list-box">
-        <h2>Top 3 Artists</h2>
+        <h2>My Top 3 Artists</h2>
         <div>
           <Button variant="contained" color="primary" onClick={handleOpenEdit}>
             Edit
           </Button>
-          <List className='display-list'>
+          <List>
             {selectedItems.map((item, index) => {
               const imageUrl = item.images && item.images.length > 0 ? item.images[0].url : ""
               return (
                 <>
                   <ListItem key={item.id}>
                     <img src={imageUrl} alt="" className="image" />
-                    {item.name}
+                    <Typography style={{marginRight: "12px"}}>{item.name}</Typography>
+                    <Typography style={{fontStyle: "italic"}}>{item.genres.join(", ")}</Typography>
                   </ListItem>
                   {index !== selectedItems.length - 1 && <Divider />}
                 </>

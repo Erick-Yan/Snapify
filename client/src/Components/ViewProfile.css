@@ -1,0 +1,34 @@
+.frame {
+    margin: auto;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    height: 100%;
+    background: black;
+    font-weight: bold;
+}
+
+.profile-photo {
+    height: 300px;
+    width: 300px;
+    border-radius: 15px;
+    margin-right: 8px;
+}
+
+.view-box {
+    border: 0.5px solid #1DB954;
+    background-color: #1DB954;
+    border-radius: 8px;
+    padding: 30px 15px 30px 15px;
+    color: white;
+}
+
+.details {
+    padding: 15px 8px 15px 8px;
+    width: 30%;
+}
+
+.spotifyModal {
+    width: 60%
+}

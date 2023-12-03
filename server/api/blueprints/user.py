@@ -37,6 +37,19 @@ def get_profile():
     return jsonify(curr_user), 200
 
 
+@user_bp.route("/user/get_track", methods=["GET"])
+@login_required
+def get_tracks():
+    track = request.args.get("track")
+    url = f"https://api.spotify.com/v1/search?q={track}&type=track"
+    payload = makeGetRequest(session, url)
+
+    if payload == None:
+        return None
+
+    return jsonify(payload), 200
+
+
 @user_bp.route("/user/get_artist", methods=["GET"])
 @login_required
 def get_artists():
@@ -53,10 +66,19 @@ def get_artists():
 @user_bp.route("/user/get_playlist", methods=["GET"])
 @login_required
 def get_playlist():
-    url = f"https://api.spotify.com/v1/me/playlists?limit=50"
-    payload = makeGetRequest(session, url)
+    playlists = []
+    prev_len = -1
+    offset = 0
+    INCREMENT = 50
+    while len(playlists) > prev_len:
+        prev_len = len(playlists)
+        url = f"https://api.spotify.com/v1/me/playlists?limit=50&offset={offset}"
+        payload = makeGetRequest(session, url)
+        if payload == None:
+            break
+        playlists.extend(payload.get("items"))
+        offset += INCREMENT
 
-    if payload == None:
-        return None
+    ret = {"items": playlists}
 
-    return jsonify(payload), 200
+    return jsonify(ret), 200
