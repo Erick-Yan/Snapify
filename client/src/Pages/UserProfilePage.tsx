@@ -15,10 +15,21 @@ function UserProfilePage() {
     const { data, isLoading, error } = useGetUserProfile()
     const [activeOption, setActiveOption] = useState(1);
 
+    const [profile, setProfile] = useState<any>(null)
     const [inputtedLyrics, setInputtedLyrics] = useState('')
     const [selectedTrack, setSelectedTrack] = useState<any>(null)
     const [selectedArtists, setSelectedArtists] = useState<any[]>([])
     const [selectedPlaylist, setSelectedPlaylist] = useState<any>(null)
+
+    useEffect(() => {
+        if (data) {
+            setProfile(data.metadata)
+            setInputtedLyrics(data.lyrics || '')
+            setSelectedTrack(data.song || null)
+            setSelectedArtists(data.artists || [])
+            setSelectedPlaylist(data.playlist || null)
+        }
+    }, [data]);
 
     const handleInputtedLyricsChange = (newValue) => {
         setInputtedLyrics(newValue);
@@ -44,7 +55,8 @@ function UserProfilePage() {
         navigate("/app")
     }
 
-    if (isLoading) {
+    if (profile === null || isLoading) {
+        console.log("Here")
         return (
             <Stack>
                 <LinearProgress />
@@ -57,7 +69,7 @@ function UserProfilePage() {
             <Stack className="header">
                 <div className="flex-container">
                     <a className="button cancel-button" href="/app">Cancel</a>
-                    <h3 className="button name">{data.display_name}</h3>
+                    <h3 className="button name">{profile.user_name}</h3>
                     <a className="button done-button" href="/app">Done</a>
                 </div>
                 <div className="nav-header">
@@ -76,14 +88,18 @@ function UserProfilePage() {
                 </div>
             </Stack>
             {activeOption === 1 && <EditProfile 
-                profileImageUrl={data.images[1].url}
+                profileImageUrl={profile.user_image_id}
                 handleUpdateLyrics={handleInputtedLyricsChange}
                 handleUpdateSong={handleSelectedTrackChange}
                 handleUpdateArtists={handleSelectedArtistsChange}
                 handleUpdatePlaylist={handleSelectedPlaylistChange}
+                lyrics={inputtedLyrics}
+                song={selectedTrack}
+                artists={selectedArtists}
+                playlist={selectedPlaylist}
             />}
             {activeOption === 2 && <ViewProfile 
-                profile={data}
+                profile={profile}
                 lyrics={inputtedLyrics}
                 song={selectedTrack}
                 artists={selectedArtists}

@@ -5,11 +5,11 @@ import './EditItems.css'
 
 interface EditArtistsProps {
   handleUpdateArtists: (artists: any) => void
+  artists: any
 }
 
-function EditArtists({handleUpdateArtists}: EditArtistsProps) {
+function EditArtists({handleUpdateArtists, artists}: EditArtistsProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -25,15 +25,13 @@ function EditArtists({handleUpdateArtists}: EditArtistsProps) {
   };
 
   const handleAddArtist = (item: string) => {
-    if (selectedItems.length < 3 && !selectedItems.includes(item)) {
-      setSelectedItems([...selectedItems, item]);
-      handleUpdateArtists([...selectedItems, item])
+    if (artists.length < 3 && !artists.includes(item)) {
+      handleUpdateArtists([...artists, item])
     }
   };
 
   const handleRemoveArtist = (item) => {
-    const updatedItems = selectedItems.filter((a) => a !== item);
-    setSelectedItems(updatedItems);
+    const updatedItems = artists.filter((a) => a !== item);
     handleUpdateArtists(updatedItems)
   };
 
@@ -42,7 +40,7 @@ function EditArtists({handleUpdateArtists}: EditArtistsProps) {
       try {
         setIsLoading(true)
         const result = await getSpotifyArtist(searchTerm.toLowerCase())
-        setSearchResults(result.artists["items"])
+        setSearchResults(result.artists)
       } catch (error) {
         console.log(error)
       }
@@ -59,16 +57,15 @@ function EditArtists({handleUpdateArtists}: EditArtistsProps) {
             Edit
           </Button>
           <List>
-            {selectedItems.map((item, index) => {
-              const imageUrl = item.images && item.images.length > 0 ? item.images[0].url : ""
+            {artists.map((item, index) => {
               return (
                 <>
                   <ListItem key={item.id}>
-                    <img src={imageUrl} alt="" className="image" />
-                    <Typography style={{marginRight: "12px"}}>{item.name}</Typography>
-                    <Typography style={{fontStyle: "italic"}}>{item.genres.join(", ")}</Typography>
+                    <img src={item.artist_image_id} alt="" className="image" />
+                    <Typography style={{marginRight: "12px"}}>{item.artist_name}</Typography>
+                    <Typography style={{fontStyle: "italic"}}>{item.artist_genres}</Typography>
                   </ListItem>
-                  {index !== selectedItems.length - 1 && <Divider />}
+                  {index !== artists.length - 1 && <Divider />}
                 </>
             )})}
           </List>
@@ -88,12 +85,11 @@ function EditArtists({handleUpdateArtists}: EditArtistsProps) {
               <List className='display-results'>
                   {isLoading && <LinearProgress />}
                   {searchResults.map((item, index) => {
-                  const imageUrl = item.images && item.images.length > 0 ? item.images[0].url : ""
                   return (
                     <>
                       <ListItem key={item.id}>
-                          <img src={imageUrl} alt="" className="image" />
-                          {item.name}
+                          <img src={item.artist_image_id} alt="" className="image" />
+                          {item.artist_name}
                           <ListItemSecondaryAction>
                             <IconButton onClick={() => handleAddArtist(item)}>+</IconButton>
                           </ListItemSecondaryAction>
@@ -104,18 +100,17 @@ function EditArtists({handleUpdateArtists}: EditArtistsProps) {
                   })}
               </List>
               <List>
-                  {selectedItems.map((item, index) => {
-                    const imageUrl = item.images && item.images.length > 0 ? item.images[0].url : ""
+                  {artists.map((item, index) => {
                     return (
                       <>
                         <ListItem key={item.id}>
-                            <img src={imageUrl} alt="" className="image" />
-                            {item.name}
+                            <img src={item.artist_image_id} alt="" className="image" />
+                            {item.artist_name}
                             <ListItemSecondaryAction>
                             <IconButton onClick={() => handleRemoveArtist(item)}>-</IconButton>
                             </ListItemSecondaryAction>
                         </ListItem>
-                        {index !== selectedItems.length - 1 && <Divider />}
+                        {index !== artists.length - 1 && <Divider />}
                       </>
                   )})}
               </List>

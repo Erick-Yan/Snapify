@@ -5,14 +5,18 @@ import { getSpotifySong } from '../API Modules/searchSong';
 
 interface EditSongProps {
     handleUpdateTrack: (track: any) => void
+    song: any
 }
 
-function EditSong({handleUpdateTrack}: EditSongProps) {
+function EditSong({handleUpdateTrack, song}: EditSongProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    console.log(searchResults)
+  }, [searchResults])
 
   const handleOpenEdit = () => {
     setIsEditing(true);
@@ -25,12 +29,10 @@ function EditSong({handleUpdateTrack}: EditSongProps) {
   };
 
   const handleAddSong = (item) => {
-    setSelectedItem(item)
     handleUpdateTrack(item)
   };
 
   const handleRemoveSong = () => {
-    setSelectedItem(null);
     handleUpdateTrack(null)
   };
 
@@ -39,7 +41,7 @@ function EditSong({handleUpdateTrack}: EditSongProps) {
       try {
         setIsLoading(true)
         const result = await getSpotifySong(searchTerm.toLowerCase())
-        setSearchResults(result.tracks["items"])
+        setSearchResults(result.songs)
       } catch (error) {
         console.log(error)
       }
@@ -55,10 +57,10 @@ function EditSong({handleUpdateTrack}: EditSongProps) {
           <Button variant="contained" color="primary" onClick={handleOpenEdit}>
             Edit
           </Button>
-          {selectedItem && (
+          {song && (
             <>
                 <iframe 
-                    src={`https://open.spotify.com/embed/track/${selectedItem.id}?utm_source=generator`} 
+                    src={`https://open.spotify.com/embed/track/${song.song_id}?utm_source=generator`} 
                     width="100%" 
                     height="352" 
                     frameBorder="0" 
@@ -83,12 +85,11 @@ function EditSong({handleUpdateTrack}: EditSongProps) {
               <List className='display-results'>
                   {isLoading && <LinearProgress />}
                   {searchResults.map((item, index) => {
-                  const imageUrl = item.album && item.album.images && item.album.images.length > 0 ? item.album.images[0].url : ""
                   return (
                     <>
-                      <ListItem key={item.id}>
-                          <img src={imageUrl} alt="" className="image" />
-                          {item.name}
+                      <ListItem key={item.song_id}>
+                          <img src={item.song_image_id} alt="" className="image" />
+                          {item.song_name}
                           <ListItemSecondaryAction>
                             <IconButton onClick={() => handleAddSong(item)}>+</IconButton>
                           </ListItemSecondaryAction>
@@ -98,10 +99,10 @@ function EditSong({handleUpdateTrack}: EditSongProps) {
                   )
                   })}
               </List>
-              {selectedItem && <List>
+              {song && <List>
                 <ListItem key={1}>
-                    <img src={selectedItem.album.images[0].url} alt="" className="image" />
-                    {selectedItem.name}
+                    <img src={song.song_image_id} alt="" className="image" />
+                    {song.song_name}
                     <ListItemSecondaryAction>
                     <IconButton onClick={handleRemoveSong}>-</IconButton>
                     </ListItemSecondaryAction>

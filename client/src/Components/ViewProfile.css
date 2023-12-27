@@ -32,3 +32,16 @@
 .spotifyModal {
     width: 60%
 }
+
+.box-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.icon {
+    margin-right: 2px;
+}
+
+.title {
+}

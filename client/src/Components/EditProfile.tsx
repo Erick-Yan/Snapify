@@ -5,12 +5,16 @@ import EditArtists from "../Components/EditArtists";
 import EditPlaylists from "../Components/EditPlaylists";
 import EditSong from "../Components/EditSong";
 
-interface EditProfilePros {
+interface EditProfileProps {
     profileImageUrl: string
     handleUpdateLyrics: (lyrics: string) => void
     handleUpdateSong: (song: any) => void
     handleUpdateArtists: (artists: any[]) => void
     handleUpdatePlaylist: (playlist: any) => void
+    lyrics: string
+    song: any
+    artists: any
+    playlist: any
 }
 
 function EditProfile({
@@ -18,10 +22,12 @@ function EditProfile({
     handleUpdateLyrics,
     handleUpdateSong, 
     handleUpdateArtists, 
-    handleUpdatePlaylist}: EditProfilePros) {
-        const [lyrics, updateLyrics] = useState("")
+    handleUpdatePlaylist,
+    lyrics,
+    song,
+    artists,
+    playlist}: EditProfileProps) {
         const handleLyricChange = (e: any) => {
-            updateLyrics(e.target.value)
             handleUpdateLyrics(e.target.value)
         }
         return (
@@ -40,13 +46,13 @@ function EditProfile({
                     </Stack>
                 </div>
                 <div className="form-items">
-                    <EditSong handleUpdateTrack={handleUpdateSong} />
+                    <EditSong handleUpdateTrack={handleUpdateSong} song={song} />
                 </div>
                 <div className="form-items">
-                    <EditArtists handleUpdateArtists={handleUpdateArtists} />
+                    <EditArtists handleUpdateArtists={handleUpdateArtists} artists={artists} />
                 </div>
                 <div className="form-items">
-                    <EditPlaylists handleUpdatePlaylist={handleUpdatePlaylist} />
+                    <EditPlaylists handleUpdatePlaylist={handleUpdatePlaylist} playlist={playlist} />
                 </div>
             </Stack>
         );

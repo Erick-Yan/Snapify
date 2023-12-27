@@ -5,11 +5,11 @@ import './EditItems.css'
 
 interface EditPlaylistsProps {
   handleUpdatePlaylist: (playlist:any) => void
+  playlist: any
 }
 
-function EditPlaylists({handleUpdatePlaylist}: EditPlaylistsProps) {
+function EditPlaylists({handleUpdatePlaylist, playlist}: EditPlaylistsProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [filteredResults, setFilteredResults] = useState<any[]>([])
@@ -20,8 +20,8 @@ function EditPlaylists({handleUpdatePlaylist}: EditPlaylistsProps) {
     try {
         setIsLoading(true)
         const result = await getUserPlaylist()
-        setSearchResults(result.items)
-        setFilteredResults(result.items)
+        setSearchResults(result.playlists)
+        setFilteredResults(result.playlists)
       } catch (error) {
         console.log(error)
       }
@@ -36,12 +36,10 @@ function EditPlaylists({handleUpdatePlaylist}: EditPlaylistsProps) {
   };
 
   const handleAddPlaylist = (item) => {
-    setSelectedItem(item);
     handleUpdatePlaylist(item)
   };
 
   const handleRemovePlaylist = () => {
-    setSelectedItem(null);
     handleUpdatePlaylist(null)
   };
 
@@ -74,12 +72,12 @@ function EditPlaylists({handleUpdatePlaylist}: EditPlaylistsProps) {
             Edit
           </Button>
         </div>
-        {selectedItem && (
+        {playlist && (
             <>
-                {selectedItem.description && <Typography className='body1'><strong>Description: </strong>{selectedItem.description}</Typography>}
+                {playlist.playlist_description && <Typography className='body1'><strong>Description: </strong>{playlist.playlist_description}</Typography>}
                 <iframe 
                     title="" 
-                    src={`https://open.spotify.com/embed/playlist/${selectedItem.id}?utm_source=generator`} 
+                    src={`https://open.spotify.com/embed/playlist/${playlist.playlist_id}?utm_source=generator`} 
                     width="100%" 
                     height="352" 
                     frameBorder="0" 
@@ -102,12 +100,11 @@ function EditPlaylists({handleUpdatePlaylist}: EditPlaylistsProps) {
               <List className='display-results'>
                   {isLoading && <LinearProgress />}
                   {filteredResults.map((item, index) => {
-                  const imageUrl = item.images && item.images.length > 0 ? item.images[0].url : ""
                   return (
                     <>
-                      <ListItem key={item.id}>
-                          <img src={imageUrl} alt="" className="image" />
-                          {item.name}
+                      <ListItem key={item.playlist_id}>
+                          <img src={item.playlist_image_id} alt="" className="image" />
+                          {item.playlist_name}
                           <ListItemSecondaryAction>
                             <IconButton onClick={() => handleAddPlaylist(item)}>+</IconButton>
                           </ListItemSecondaryAction>
@@ -117,10 +114,10 @@ function EditPlaylists({handleUpdatePlaylist}: EditPlaylistsProps) {
                   )
                   })}
               </List>
-              {selectedItem && <List>
+              {playlist && <List>
                 <ListItem key={1}>
-                    <img src={selectedItem.images[0].url} alt="" className="image" />
-                    {selectedItem.name}
+                    <img src={playlist.playlist_image_id} alt="" className="image" />
+                    {playlist.playlist_name}
                     <ListItemSecondaryAction>
                     <IconButton onClick={handleRemovePlaylist}>-</IconButton>
                     </ListItemSecondaryAction>

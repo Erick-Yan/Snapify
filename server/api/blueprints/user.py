@@ -11,14 +11,17 @@ from flask import (
 from dotenv import load_dotenv
 import os
 import sys
-import logging
-import jwt
 
-# sys.path is a list of absolute path strings
-sys.path.insert(0, "../../api/utils.py")
 sys.path.insert(0, "../../api/wrapper_utils.py")
-from api.utils import createStateKey, getToken, getUserInformation, makeGetRequest
 from api.wrapper_utils import login_required
+
+sys.path.insert(0, "../../api/services")
+from api.services.user_service import (
+    get_spotify_artists,
+    get_user_playlists,
+    get_user_profile,
+    get_spotify_tracks,
+)
 
 load_dotenv()
 CLIENT_ID = os.getenv("CLIENT_ID")
@@ -33,52 +36,35 @@ user_bp = Blueprint("user", __name__)
 @user_bp.route("/user/get_profile", methods=["GET"])
 @login_required
 def get_profile():
-    curr_user = getUserInformation(session)
-    return jsonify(curr_user), 200
+    user_profile = get_user_profile()
+    print("get_profile: ", user_profile)
+    return jsonify(user_profile), 200
 
 
 @user_bp.route("/user/get_track", methods=["GET"])
 @login_required
 def get_tracks():
-    track = request.args.get("track")
-    url = f"https://api.spotify.com/v1/search?q={track}&type=track"
-    payload = makeGetRequest(session, url)
+    track_name = request.args.get("track")
+    tracks = get_spotify_tracks(track_name)
 
-    if payload == None:
-        return None
-
-    return jsonify(payload), 200
+    print("get_tracks: ", tracks)
+    return jsonify(tracks), 200
 
 
 @user_bp.route("/user/get_artist", methods=["GET"])
 @login_required
 def get_artists():
-    artist = request.args.get("artist")
-    url = f"https://api.spotify.com/v1/search?q={artist}&type=artist"
-    payload = makeGetRequest(session, url)
+    artist_name = request.args.get("artist")
+    artists = get_spotify_artists(artist_name)
 
-    if payload == None:
-        return None
-
-    return jsonify(payload), 200
+    print("get_artists: ", artists)
+    return jsonify(artists), 200
 
 
 @user_bp.route("/user/get_playlist", methods=["GET"])
 @login_required
 def get_playlist():
-    playlists = []
-    prev_len = -1
-    offset = 0
-    INCREMENT = 50
-    while len(playlists) > prev_len:
-        prev_len = len(playlists)
-        url = f"https://api.spotify.com/v1/me/playlists?limit=50&offset={offset}"
-        payload = makeGetRequest(session, url)
-        if payload == None:
-            break
-        playlists.extend(payload.get("items"))
-        offset += INCREMENT
+    playlists = get_user_playlists()
 
-    ret = {"items": playlists}
-
-    return jsonify(ret), 200
+    print("get_playlist: ", playlists)
+    return jsonify(playlists), 200
