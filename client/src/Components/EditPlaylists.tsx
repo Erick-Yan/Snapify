@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Modal, TextField, List, ListItem, ListItemSecondaryAction, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, LinearProgress, Stack, makeStyles, Divider, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import { Button, TextField, List, ListItem, ListItemSecondaryAction, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, LinearProgress, Stack, makeStyles, Divider, Typography } from '@mui/material';
 import { getUserPlaylist } from "../API Modules/searchUserPlaylist";
+import InfoIcon from '@mui/icons-material/Info';
 import './EditItems.css'
+import SpotifyButton from './SpotifyButton';
 
 interface EditPlaylistsProps {
   handleUpdatePlaylist: (playlist:any) => void
@@ -67,36 +69,25 @@ function EditPlaylists({handleUpdatePlaylist, playlist}: EditPlaylistsProps) {
     <>
       <div className="list-box">
         <h2>My Intro Playlist</h2>
-        <div style={{marginBottom: "10px"}}>
-          <Button variant="contained" color="primary" onClick={handleOpenEdit}>
-            Edit
-          </Button>
-        </div>
-        {playlist && (
-            <>
-                {playlist.playlist_description && <Typography className='body1'><strong>Description: </strong>{playlist.playlist_description}</Typography>}
-                <iframe 
-                    title="" 
-                    src={`https://open.spotify.com/embed/playlist/${playlist.playlist_id}?utm_source=generator`} 
-                    width="100%" 
-                    height="352" 
-                    frameBorder="0" 
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                    loading="lazy">
-                </iframe>
-            </>)}
+        <SpotifyButton text="EDIT" color="green" clickButton={handleOpenEdit} />
+        <List>
+          {playlist && (
+              <ListItem>
+                <img src={playlist.playlist_image_id} alt="" className="image" />
+                <h4>{playlist.playlist_name}</h4>
+              </ListItem>
+          )}
+        </List>
       </div>
       <Dialog open={isEditing} onClose={handleCloseEdit} maxWidth="xs">
-        <DialogTitle>Edit Playlist</DialogTitle>
+        <DialogTitle sx={{paddingY: "0"}}><h2>Edit Playlist</h2></DialogTitle>
         <DialogContent>
           <DialogContentText>
             <TextField
                 onChange={handleInputChange}
                 fullWidth
                 />
-                <Button variant="contained" color="primary" onClick={handleSearch}>
-                    Search
-                </Button>
+                <SpotifyButton text="SEARCH" color="green" clickButton={handleSearch} />
               <List className='display-results'>
                   {isLoading && <LinearProgress />}
                   {filteredResults.map((item, index) => {
@@ -104,7 +95,7 @@ function EditPlaylists({handleUpdatePlaylist, playlist}: EditPlaylistsProps) {
                     <>
                       <ListItem key={item.playlist_id}>
                           <img src={item.playlist_image_id} alt="" className="image" />
-                          {item.playlist_name}
+                          <h4>{item.playlist_name}</h4>
                           <ListItemSecondaryAction>
                             <IconButton onClick={() => handleAddPlaylist(item)}>+</IconButton>
                           </ListItemSecondaryAction>
@@ -117,7 +108,7 @@ function EditPlaylists({handleUpdatePlaylist, playlist}: EditPlaylistsProps) {
               {playlist && <List>
                 <ListItem key={1}>
                     <img src={playlist.playlist_image_id} alt="" className="image" />
-                    {playlist.playlist_name}
+                    <h4>{playlist.playlist_name}</h4>
                     <ListItemSecondaryAction>
                     <IconButton onClick={handleRemovePlaylist}>-</IconButton>
                     </ListItemSecondaryAction>
@@ -125,10 +116,10 @@ function EditPlaylists({handleUpdatePlaylist, playlist}: EditPlaylistsProps) {
               </List>}
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEdit} color="primary">
-            Done
-          </Button>
+        <DialogActions style={{display: "flex", flexDirection: "column" }}>
+          <SpotifyButton text="DONE" color="green" clickButton={handleCloseEdit} />
+          <h5>*Public playlists added to your profile ONLY</h5>
+          <a target="_blank" href="https://www.androidauthority.com/make-spotify-playlist-public-3075538/" rel="noreferrer">Instructions</a>
         </DialogActions>
       </Dialog>
     </>

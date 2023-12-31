@@ -1,12 +1,7 @@
 from flask import (
     Blueprint,
-    url_for,
-    session,
-    redirect,
     request,
     jsonify,
-    abort,
-    make_response,
 )
 from dotenv import load_dotenv
 import os
@@ -21,6 +16,7 @@ from api.services.user_service import (
     get_user_playlists,
     get_user_profile,
     get_spotify_tracks,
+    save_user_profile,
 )
 
 load_dotenv()
@@ -68,3 +64,16 @@ def get_playlist():
 
     print("get_playlist: ", playlists)
     return jsonify(playlists), 200
+
+
+@user_bp.route("/user/save_profile", methods=["POST"])
+@login_required
+def delete_profile():
+    data = request.json
+    lyrics = data.get("lyrics", "")
+    song = data.get("song")
+    artists = data.get("artists", [])
+    playlist = data.get("playlist")
+    save_user_profile(lyrics, song, artists, playlist)
+
+    return jsonify({"message": "Profile saved successfully"}), 200

@@ -1,6 +1,7 @@
 .display-results {
-    border: 3px lightblue solid;
+    border: 1px rgb(234, 234, 234) solid;
     border-radius: 5px;
+    background-color: rgb(234, 234, 234);
     overflow-y: auto;
     max-height: 200px;
 }
@@ -12,8 +13,10 @@
 }
 
 .list-box {
-    border: green 1px solid;
+    border: #1DB954 1px solid;
+    border-radius: 8px;
     justify-content: center;
     align-items: center;
     width: 70%;
+    font-family: sans-serif;
 }

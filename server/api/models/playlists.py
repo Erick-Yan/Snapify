@@ -1,3 +1,4 @@
+import logging
 from ..extensions import db
 
 
@@ -21,16 +22,18 @@ class Playlists(db.Model):
         try:
             new_playlist = cls(
                 user_id=user_id,
-                playlist_id=playlist_data.get("id"),
+                playlist_id=playlist_data.get("playlist_id"),
                 playlist_name=playlist_data.get("playlist_name"),
-                playlist_image_id=playlist_data.get("image_id"),
-                playlist_description=playlist_data.get("description"),
+                playlist_image_id=playlist_data.get("playlist_image_id"),
+                playlist_description=playlist_data.get("playlist_description"),
             )
             db.session.add(new_playlist)
             db.session.commit()
+            logging.info("Saved playlist: ", playlist_data)
             return new_playlist
         except Exception as e:
             db.session.rollback()
+            logging.error("Failed to save playlist: ", playlist_data)
             raise e
 
     @classmethod

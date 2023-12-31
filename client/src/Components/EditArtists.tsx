@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Modal, TextField, List, ListItem, ListItemSecondaryAction, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, LinearProgress, Stack, makeStyles, Divider, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import { Button, TextField, List, ListItem, ListItemSecondaryAction, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, LinearProgress, Stack, makeStyles, Divider, Typography } from '@mui/material';
 import { getSpotifyArtist } from "../API Modules/searchSpotifyArtist";
 import './EditItems.css'
+import SpotifyButton from './SpotifyButton';
 
 interface EditArtistsProps {
   handleUpdateArtists: (artists: any) => void
@@ -53,35 +54,34 @@ function EditArtists({handleUpdateArtists, artists}: EditArtistsProps) {
       <div className="list-box">
         <h2>My Top 3 Artists</h2>
         <div>
-          <Button variant="contained" color="primary" onClick={handleOpenEdit}>
-            Edit
-          </Button>
+          <SpotifyButton text="EDIT" color="green" clickButton={handleOpenEdit} />
           <List>
+            <Divider style={{backgroundColor: "#1DB954"}} />
             {artists.map((item, index) => {
               return (
                 <>
                   <ListItem key={item.id}>
                     <img src={item.artist_image_id} alt="" className="image" />
-                    <Typography style={{marginRight: "12px"}}>{item.artist_name}</Typography>
-                    <Typography style={{fontStyle: "italic"}}>{item.artist_genres}</Typography>
+                    <h4 style={{marginRight: "12px"}}>{item.artist_name}</h4>
+                    <p style={{fontStyle: "italic"}}>{item.artist_genres}</p>
                   </ListItem>
-                  {index !== artists.length - 1 && <Divider />}
+                  {index !== artists.length - 1 && <Divider style={{backgroundColor: "#1DB954"}} />}
                 </>
             )})}
           </List>
         </div>
       </div>
       <Dialog open={isEditing} onClose={handleCloseEdit} maxWidth="xs">
-        <DialogTitle>Edit Artists</DialogTitle>
+        <DialogTitle sx={{paddingY: "0"}}>
+          <h2>Edit Artists</h2>
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>
             <TextField
               onChange={(e) => setSearchTerm(e.target.value)}
               fullWidth
             />
-            <Button variant="contained" color="primary" onClick={handleSearch}>
-              Search
-            </Button>
+              <SpotifyButton text="SEARCH" color="green" clickButton={handleSearch} />
               <List className='display-results'>
                   {isLoading && <LinearProgress />}
                   {searchResults.map((item, index) => {
@@ -89,7 +89,7 @@ function EditArtists({handleUpdateArtists, artists}: EditArtistsProps) {
                     <>
                       <ListItem key={item.id}>
                           <img src={item.artist_image_id} alt="" className="image" />
-                          {item.artist_name}
+                          <h4 style={{ fontFamily: "sans-serif" }}>{item.artist_name}</h4>
                           <ListItemSecondaryAction>
                             <IconButton onClick={() => handleAddArtist(item)}>+</IconButton>
                           </ListItemSecondaryAction>
@@ -105,7 +105,7 @@ function EditArtists({handleUpdateArtists, artists}: EditArtistsProps) {
                       <>
                         <ListItem key={item.id}>
                             <img src={item.artist_image_id} alt="" className="image" />
-                            {item.artist_name}
+                            <h4 style={{ fontFamily: "sans-serif" }}>{item.artist_name}</h4>
                             <ListItemSecondaryAction>
                             <IconButton onClick={() => handleRemoveArtist(item)}>-</IconButton>
                             </ListItemSecondaryAction>
@@ -116,10 +116,9 @@ function EditArtists({handleUpdateArtists, artists}: EditArtistsProps) {
               </List>
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEdit} color="primary">
-            Done
-          </Button>
+        <DialogActions style={{display: "flex", flexDirection: "column" }}>
+          <SpotifyButton text="DONE" color="green" clickButton={handleCloseEdit} />
+          <h5>*3 artists max</h5>
         </DialogActions>
       </Dialog>
     </>

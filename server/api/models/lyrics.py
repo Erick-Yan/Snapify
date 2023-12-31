@@ -1,3 +1,4 @@
+import logging
 from ..extensions import db
 
 
@@ -19,14 +20,16 @@ class Lyrics(db.Model):
         try:
             new_lyrics = cls(
                 user_id=user_id,
-                lyric_id=lyric_data.get("id"),
+                lyric_id=lyric_data.get("lyric_id"),
                 lyrics=lyric_data.get("lyrics"),
             )
             db.session.add(new_lyrics)
             db.session.commit()
+            logging.info("Saved lyrics: ", lyric_data)
             return new_lyrics
         except Exception as e:
             db.session.rollback()
+            logging.error("Failed to save lyrics: ", lyric_data)
             raise e
 
     @classmethod

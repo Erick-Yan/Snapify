@@ -1,3 +1,4 @@
+import logging
 from ..extensions import db
 
 
@@ -31,17 +32,17 @@ class Artists(db.Model):
         try:
             db.session.add_all(new_artists)
             db.session.commit()
+            logging.info("Saved artists: ", artists)
         except Exception as e:
             db.session.rollback()
+            logging.error("Failed to save artists: ", artists)
             raise e
         return new_artists
 
     @classmethod
-    def delete_artists(cls, user_id, artist_ids):
+    def delete_artists(cls, user_id):
         try:
-            artists_to_delete = cls.query.filter(
-                cls.user_id == user_id, cls.artist_id.in_(artist_ids)
-            ).all()
+            artists_to_delete = cls.query.filter_by(user_id=user_id).all()
             for artist in artists_to_delete:
                 db.session.delete(artist)
             db.session.commit()

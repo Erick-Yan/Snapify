@@ -1,18 +1,18 @@
-import React, {useEffect, useState} from "react";
-import { Avatar, Button, Divider, List, ListItem, Stack, TextField, Typography } from "@mui/material";
+import React from "react";
+import { Divider, List, ListItem, Stack, Typography } from "@mui/material";
 import PublicIcon from '@mui/icons-material/Public';
 import PersonIcon from '@mui/icons-material/Person';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import LyricsIcon from '@mui/icons-material/Lyrics';
-import DoNotDisturbOnIcon from '@mui/icons-material/DoNotDisturbOn';
 import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import InterpreterModeIcon from '@mui/icons-material/InterpreterMode';
 import './ViewProfile.css'
 
 interface ViewProfileProps {
     profile: any
-    lyrics: string
+    lyrics: any
     song: any
     artists: any[]
     playlist: any
@@ -24,53 +24,54 @@ function ViewProfile({
     song,
     artists,
     playlist}: ViewProfileProps) {
-        console.log(profile)
         return (
             <Stack className="frame" spacing={4}>
                 <img className="profile-photo" src={profile.user_image_id} alt="" />
-                <div className="view-box">
+                {lyrics && <div className="view-box">
                     <div className="box-title">
                         <LyricsIcon className="icon" />
-                        <Typography className="title" variant="h6">Lyrics I live by</Typography>
+                        <h3 className="title">Lyrics I live by</h3>
                     </div>
-                    <Typography variant="h2">{lyrics}</Typography>
-                </div>
+                    <p style={{fontSize: "60px", marginTop: "0", marginBottom: "0", fontWeight: "lighter"}}>{lyrics.lyrics}</p>
+                </div>}
                 <div className="view-box details">
                     <List>
                         <ListItem>
                             <PublicIcon style={{marginRight: "8px"}} />
-                            <Typography>{profile.user_country}</Typography>
+                            <h4 style={{marginTop: "0", marginBottom: "0", fontWeight: "normal"}}>{profile.user_country}</h4>
                         </ListItem>
                         <Divider style={{backgroundColor: "white"}} />
                         <ListItem>
                             <PersonIcon style={{marginRight: "8px"}} />
-                            <Typography>{profile.user_type}</Typography>
+                            <h4 style={{marginTop: "0", marginBottom: "0", fontWeight: "normal"}}>{profile.user_type}</h4>
                         </ListItem>
                         <Divider style={{backgroundColor: "white"}} />
                         <ListItem>
                             <GroupAddIcon style={{marginRight: "8px"}} />
-                            <Typography>{profile.user_followers}</Typography>
+                            <h4 style={{marginTop: "0", marginBottom: "0", fontWeight: "normal"}}>{profile.user_followers}</h4>
                         </ListItem>
                     </List>
                 </div>
                 {song && <div className="view-box spotifyModal">
                     <div className="box-title">
                         <PlayCircleFilledIcon className="icon" />
-                        <Typography className="title" variant="h6">I'm listening to</Typography>
+                        <h3 className="title">I'm listening to</h3>
                     </div>
-                    <iframe 
-                        src={`https://open.spotify.com/embed/track/${song.song_id}?utm_source=generator`} 
-                        width="100%" 
-                        height="352" 
-                        frameBorder="0" 
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                        loading="lazy"
-                    ></iframe>
+                    <List>
+                        <iframe 
+                            src={`https://open.spotify.com/embed/track/${song.song_id}?utm_source=generator`} 
+                            width="100%" 
+                            height="352" 
+                            frameBorder="0" 
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                            loading="lazy"
+                        ></iframe>
+                    </List>
                 </div>}
                 {artists.length > 0 && <div className="view-box">
                     <div className="box-title">
-                        <DoNotDisturbOnIcon className="icon" />
-                        <Typography className="title" variant="h6">Top 3, no debate</Typography>
+                        <InterpreterModeIcon className="icon" />
+                        <h3 className="title">I can't get enough of</h3>
                     </div>
                     <List>
                         {artists.map((artist, index) => {
@@ -78,8 +79,8 @@ function ViewProfile({
                             <>
                             <ListItem key={artist.id}>
                                 <img style={{borderRadius: "4"}} src={artist.artist_image_id} alt="" className="image" />
-                                <Typography style={{marginRight: "12px"}}>{artist.artist_name}</Typography>
-                                <Typography style={{fontStyle: "italic"}}>{artist.artist_genres}</Typography>
+                                <h4 style={{marginRight: "12px"}}>{artist.artist_name}</h4>
+                                <p style={{color: "#43464B", fontWeight: "500"}}>{artist.artist_genres}</p>
                             </ListItem>
                             {index !== artists.length - 1 && <Divider style={{backgroundColor: "white"}} />}
                             </>
@@ -89,26 +90,21 @@ function ViewProfile({
                 {playlist && <div className="view-box spotifyModal">
                     <div className="box-title">
                         <QueueMusicIcon className="icon" />
-                        <Typography className="title" variant="h6">Dive into my taste</Typography>
+                        <h3 className="title">Dive into my taste</h3>
                     </div>
-                    <iframe 
-                        title="" 
-                        src={`https://open.spotify.com/embed/playlist/${playlist.playlist_id}?utm_source=generator`} 
-                        width="100%" 
-                        height="352" 
-                        frameBorder="0" 
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                        loading="lazy">
-                    </iframe>
+                    <p style={{color: "#43464B", marginTop: "0", marginBottom: "0", fontWeight: "lighter"}}>{playlist.playlist_description}</p>
+                    <List>
+                        <iframe 
+                            title="" 
+                            src={`https://open.spotify.com/embed/playlist/${playlist.playlist_id}?utm_source=generator`} 
+                            width="100%" 
+                            height="352" 
+                            frameBorder="0" 
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                            loading="lazy">
+                        </iframe>
+                    </List>
                 </div>}
-                {song === null && playlist === null && artists.length === 0 && (
-                    <div className="view-box spotifyModal">
-                        <div className="box-title">
-                            <HelpOutlineIcon className="icon" />
-                            <Typography className="title" variant="h6">Your profile is looking a little empty...</Typography>
-                        </div>
-                    </div>
-                )}
             </Stack>
         );
 };

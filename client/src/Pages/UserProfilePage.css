@@ -1,42 +1,36 @@
 .header {
-    margin: auto;
-    text-align: center;
-    border-bottom: rgb(220, 216, 216) solid;
+    /* margin: auto;
+    text-align: center; */
+    border-bottom: #040306 solid;
     border-bottom-width: 2px;
+    background-color: #040306;
+    width: 100%;
 }
 
 .flex-container {
     display: flex;
-    justify-content: space-between;
     align-items: center; 
-    width: 100%;
+    justify-content: space-between;
+    width: calc(100% - 20px);
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .button {
-    flex: 1;
     text-align: center;
-    padding: 5px;
-}
-
-.cancel-button {
-    text-decoration: none;
-    flex: 10;
 }
 
 .name {
-    flex: 80;
-}
-
-.done-button {
-    text-decoration: none;
-    flex: 10;
+    color: white;
+    font-family: sans-serif;
 }
 
 .nav-header {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: -2px;
+    margin-bottom: -2.5px;
+    background-color: #040306;
 }
   
 .nav-option {
@@ -45,18 +39,19 @@
     margin: 0 10px;
     text-align: center;
     color: grey;
+    font-family: sans-serif;
 }
   
 .active {
-    color: black;
-    border-bottom: black solid;
+    color: white;
+    border-bottom: #1DB954 solid;
     border-bottom-width: 2px;
     z-index: 99
 }
 
 .form {
-    border: 1px solid red;
-    margin-top: 20px;
+    padding: 20px;
+    background-color: #181818;
 }
 
 .form-items {
@@ -70,4 +65,35 @@
     width: 200px;
     border-radius: 15px;
     margin-right: 8px;
+}
+
+.profile-main {
+    width: 100%;
+    overflow: hidden;
+}
+
+.profile-container {
+    display: flex;
+    width: 200%;
+    overflow: hidden;
+}
+
+.edit-profile {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease;
+}
+
+.view-profile {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease;
+}
+
+.slide-left {
+    transform: translateX(-100%);
+}
+
+.slide-right {
+    transform: translateX(0%);
 }

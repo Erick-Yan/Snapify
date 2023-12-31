@@ -1,3 +1,4 @@
+import logging
 from ..extensions import db
 
 
@@ -21,16 +22,18 @@ class Songs(db.Model):
         try:
             new_song = cls(
                 user_id=user_id,
-                song_id=song_data.get("id"),
-                song_name=song_data.get("name"),
-                song_artists=song_data.get("artists"),
+                song_id=song_data.get("song_id"),
+                song_name=song_data.get("song_name"),
+                song_artists=song_data.get("song_artists"),
                 song_image_id=song_data.get("song_image_id"),
             )
             db.session.add(new_song)
             db.session.commit()
+            logging.info("Saved song: ", song_data)
             return new_song
         except Exception as e:
             db.session.rollback()
+            logging.error("Failed to save song: ", song_data)
             raise e
 
     @classmethod

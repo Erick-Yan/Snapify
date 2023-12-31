@@ -1,6 +1,7 @@
 from flask import session
 import logging
 import sys
+import uuid
 
 sys.path.insert(0, "../../api/models")
 from api.models.users import Users
@@ -106,19 +107,42 @@ def get_user_playlists():
 
         extracted_playlists = []
         for playlist in playlists:
-            extracted_playlists.append(
-                {
-                    "user_id": session["user_id"],
-                    "playlist_id": playlist.get("id"),
-                    "playlist_name": playlist.get("name"),
-                    "playlist_image_id": playlist.get("images")[0].get("url")
-                    if playlist.get("images")
-                    else None,
-                    "playlist_description": playlist.get("description"),
-                }
-            )
+            if playlist.get("public"):
+                extracted_playlists.append(
+                    {
+                        "user_id": session["user_id"],
+                        "playlist_id": playlist.get("id"),
+                        "playlist_name": playlist.get("name"),
+                        "playlist_image_id": playlist.get("images")[0].get("url")
+                        if playlist.get("images")
+                        else None,
+                        "playlist_description": playlist.get("description"),
+                    }
+                )
 
         return {"playlists": extracted_playlists}
     except Exception as e:
         logging.error("Failed to fetch user's playlists: ", e)
+        raise e
+
+
+def save_user_profile(lyrics, song, artists, playlist):
+    try:
+        if lyrics:
+            Lyrics.delete_lyrics(session["user_id"])
+            Lyrics.create_lyrics(session["user_id"], lyrics)
+
+        if song:
+            Songs.delete_song(session["user_id"])
+            Songs.create_song(session["user_id"], song)
+
+        if artists:
+            Artists.delete_artists(session["user_id"])
+            Artists.create_artists(session["user_id"], artists)
+
+        if playlist:
+            Playlists.delete_playlist(session["user_id"])
+            Playlists.create_playlist(session["user_id"], playlist)
+    except Exception as e:
+        logging.error("Failed to save user profile: ", e)
         raise e

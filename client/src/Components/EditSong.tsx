@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Modal, TextField, List, ListItem, ListItemSecondaryAction, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, LinearProgress, Stack, makeStyles, Divider, Typography } from '@mui/material';
+import { Button, TextField, List, ListItem, ListItemSecondaryAction, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, LinearProgress, Stack, makeStyles, Divider, Typography } from '@mui/material';
 import './EditItems.css'
 import { getSpotifySong } from '../API Modules/searchSong';
+import SpotifyButton from './SpotifyButton';
 
 interface EditSongProps {
     handleUpdateTrack: (track: any) => void
@@ -54,34 +55,27 @@ function EditSong({handleUpdateTrack, song}: EditSongProps) {
       <div className="list-box">
         <h2>I'm Listening to...</h2>
         <div>
-          <Button variant="contained" color="primary" onClick={handleOpenEdit}>
-            Edit
-          </Button>
-          {song && (
-            <>
-                <iframe 
-                    src={`https://open.spotify.com/embed/track/${song.song_id}?utm_source=generator`} 
-                    width="100%" 
-                    height="352" 
-                    frameBorder="0" 
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                    loading="lazy"
-                ></iframe>
-            </>
-          )}
+          <SpotifyButton text="EDIT" color="green" clickButton={handleOpenEdit} />
+          <List>
+            {song && (
+              <ListItem>
+                <img src={song.song_image_id} alt="" className="image" />
+                <Typography style={{marginRight: "12px"}}>{song.song_name}</Typography>
+                <Typography style={{fontStyle: "italic"}}>{song.song_artists}</Typography>
+              </ListItem>
+            )}
+          </List>
         </div>
       </div>
       <Dialog open={isEditing} onClose={handleCloseEdit} maxWidth="xs">
-        <DialogTitle>Edit Tracks</DialogTitle>
+        <DialogTitle sx={{paddingY: "0"}}><h2>Edit Tracks</h2></DialogTitle>
         <DialogContent>
           <DialogContentText>
             <TextField
               onChange={(e) => setSearchTerm(e.target.value)}
               fullWidth
             />
-            <Button variant="contained" color="primary" onClick={handleSearch}>
-              Search
-            </Button>
+              <SpotifyButton text="SEARCH" color="green" clickButton={handleSearch} />
               <List className='display-results'>
                   {isLoading && <LinearProgress />}
                   {searchResults.map((item, index) => {
@@ -89,7 +83,7 @@ function EditSong({handleUpdateTrack, song}: EditSongProps) {
                     <>
                       <ListItem key={item.song_id}>
                           <img src={item.song_image_id} alt="" className="image" />
-                          {item.song_name}
+                          <h4>{item.song_name}</h4>
                           <ListItemSecondaryAction>
                             <IconButton onClick={() => handleAddSong(item)}>+</IconButton>
                           </ListItemSecondaryAction>
@@ -102,7 +96,7 @@ function EditSong({handleUpdateTrack, song}: EditSongProps) {
               {song && <List>
                 <ListItem key={1}>
                     <img src={song.song_image_id} alt="" className="image" />
-                    {song.song_name}
+                    <h4>{song.song_name}</h4>
                     <ListItemSecondaryAction>
                     <IconButton onClick={handleRemoveSong}>-</IconButton>
                     </ListItemSecondaryAction>
@@ -110,10 +104,8 @@ function EditSong({handleUpdateTrack, song}: EditSongProps) {
               </List>}
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEdit} color="primary">
-            Done
-          </Button>
+        <DialogActions style={{display: "flex", flexDirection: "column" }}>
+          <SpotifyButton text="DONE" color="green" clickButton={handleCloseEdit} />
         </DialogActions>
       </Dialog>
     </>
