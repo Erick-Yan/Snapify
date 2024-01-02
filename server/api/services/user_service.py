@@ -128,20 +128,20 @@ def get_user_playlists():
 
 def save_user_profile(lyrics, song, artists, playlist):
     try:
+        Lyrics.delete_lyrics(session["user_id"])
         if lyrics:
-            Lyrics.delete_lyrics(session["user_id"])
             Lyrics.create_lyrics(session["user_id"], lyrics)
 
+        Songs.delete_song(session["user_id"])
         if song:
-            Songs.delete_song(session["user_id"])
             Songs.create_song(session["user_id"], song)
 
+        Artists.delete_artists(session["user_id"])
         if artists:
-            Artists.delete_artists(session["user_id"])
             Artists.create_artists(session["user_id"], artists)
 
+        Playlists.delete_playlist(session["user_id"])
         if playlist:
-            Playlists.delete_playlist(session["user_id"])
             Playlists.create_playlist(session["user_id"], playlist)
     except Exception as e:
         logging.error("Failed to save user profile: ", e)

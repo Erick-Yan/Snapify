@@ -68,7 +68,7 @@ def get_playlist():
 
 @user_bp.route("/user/save_profile", methods=["POST"])
 @login_required
-def delete_profile():
+def save_profile():
     data = request.json
     lyrics = data.get("lyrics", "")
     song = data.get("song")

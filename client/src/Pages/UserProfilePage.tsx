@@ -26,7 +26,7 @@ function UserProfilePage() {
     useEffect(() => {
         if (data) {
             setProfile(data.metadata)
-            setInputtedLyrics(data.lyrics || '')
+            setInputtedLyrics(data.lyrics?.lyrics || '')
             setSelectedTrack(data.song || null)
             setSelectedArtists(data.artists || [])
             setSelectedPlaylist(data.playlist || null)
@@ -132,11 +132,11 @@ function UserProfilePage() {
             const editProfileElement = profileContainer.querySelector('.edit-profile') as HTMLElement | null;
             const viewProfileElement = profileContainer.querySelector('.view-profile') as HTMLElement | null;
             if (editProfileElement && viewProfileElement) {
-                const newHeight = activeOption === 1 ? editProfileElement.offsetHeight : viewProfileElement.offsetHeight;
+                const newHeight = (activeOption === 1 || (selectedTrack == null && selectedPlaylist == null)) ? editProfileElement.offsetHeight : viewProfileElement.offsetHeight;
                 setProfileContainerHeight(newHeight + "px");
             }
         }
-    }, [activeOption]);
+    }, [activeOption, inputtedLyrics, selectedTrack, selectedArtists, selectedPlaylist]);
 
     if (error) {
         navigate("/app")

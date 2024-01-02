@@ -32,7 +32,7 @@ function ViewProfile({
                         <LyricsIcon className="icon" />
                         <h3 className="title">Lyrics I live by</h3>
                     </div>
-                    <p style={{fontSize: "60px", marginTop: "0", marginBottom: "0", fontWeight: "lighter"}}>{lyrics.lyrics}</p>
+                    <p style={{fontSize: "60px", marginTop: "0", marginBottom: "0", fontWeight: "lighter"}}>{lyrics}</p>
                 </div>}
                 <div className="view-box details">
                     <List>
@@ -48,7 +48,7 @@ function ViewProfile({
                         <Divider style={{backgroundColor: "white"}} />
                         <ListItem>
                             <GroupAddIcon style={{marginRight: "8px"}} />
-                            <h4 style={{marginTop: "0", marginBottom: "0", fontWeight: "normal"}}>{profile.user_followers}</h4>
+                            <h4 style={{marginTop: "0", marginBottom: "0", fontWeight: "normal"}}>{profile.user_followers} Followers</h4>
                         </ListItem>
                     </List>
                 </div>

@@ -51,8 +51,9 @@ function EditProfile({
                         multiline
                         variant="outlined"
                         onChange={handleLyricChange}
-                        defaultValue={lyrics.lyrics}
+                        defaultValue={lyrics}
                         InputProps={{style: styles}}
+                        sx={{marginLeft: "5px", border: "1px solid green", borderRadius: "3px"}}
                     />
                 </div>
                 <div className="form-items">

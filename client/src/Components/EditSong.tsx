@@ -60,8 +60,8 @@ function EditSong({handleUpdateTrack, song}: EditSongProps) {
             {song && (
               <ListItem>
                 <img src={song.song_image_id} alt="" className="image" />
-                <Typography style={{marginRight: "12px"}}>{song.song_name}</Typography>
-                <Typography style={{fontStyle: "italic"}}>{song.song_artists}</Typography>
+                <h4 style={{marginRight: "12px"}}>{song.song_name}</h4>
+                <p style={{fontStyle: "italic"}}>{song.song_artists}</p>
               </ListItem>
             )}
           </List>
@@ -79,18 +79,19 @@ function EditSong({handleUpdateTrack, song}: EditSongProps) {
               <List className='display-results'>
                   {isLoading && <LinearProgress />}
                   {searchResults.map((item, index) => {
-                  return (
-                    <>
-                      <ListItem key={item.song_id}>
-                          <img src={item.song_image_id} alt="" className="image" />
-                          <h4>{item.song_name}</h4>
-                          <ListItemSecondaryAction>
-                            <IconButton onClick={() => handleAddSong(item)}>+</IconButton>
-                          </ListItemSecondaryAction>
-                      </ListItem>
-                      {index !== searchResults.length - 1 && <Divider />}
-                    </>
-                  )
+                    return (
+                      <>
+                        <ListItem key={item.song_id}>
+                            <img src={item.song_image_id} alt="" className="image" />
+                            <h4 style={{marginRight: "12px"}}>{item.song_name}</h4>
+                            <p>{item.song_artists}</p>
+                            <ListItemSecondaryAction>
+                              <IconButton onClick={() => handleAddSong(item)}>+</IconButton>
+                            </ListItemSecondaryAction>
+                        </ListItem>
+                        {index !== searchResults.length - 1 && <Divider />}
+                      </>
+                    )
                   })}
               </List>
               {song && <List>

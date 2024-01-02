@@ -36,14 +36,23 @@
 .nav-option {
     cursor: pointer;
     padding: 10px 20px;
-    margin: 0 10px;
     text-align: center;
     color: grey;
     font-family: sans-serif;
+    transition: 0.1s ease-in-out;
+}
+
+.nav-option:hover {
+    color: white;
+    background-color: #181818;
+    border-bottom: #1DB954 solid;
+    border-bottom-width: 2px;
+    z-index: 99
 }
   
 .active {
     color: white;
+    background-color: #181818;
     border-bottom: #1DB954 solid;
     border-bottom-width: 2px;
     z-index: 99
@@ -70,12 +79,14 @@
 .profile-main {
     width: 100%;
     overflow: hidden;
+    background: #181818;
 }
 
 .profile-container {
     display: flex;
     width: 200%;
     overflow: hidden;
+    background: #181818;
 }
 
 .edit-profile {

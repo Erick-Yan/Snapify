@@ -12,6 +12,7 @@ const initialState = {
     token: null,
     userId: null,
     isLoading: false,
+    profileUrl: null,
 }
 
 const handleLoginRequest = (state) => {
@@ -29,6 +30,7 @@ const handleLoginSuccess = (state, action) => {
         token: token["token"],
         userId: token["user_id"],
         isLoading: false,
+        profileUrl: token["profile_url"]
     }
 }
 
@@ -45,6 +47,7 @@ const handleLogout = (state) => {
         token: null,
         userId: null,
         isLoading: false,
+        profileUrl: null,
     }
 }
 

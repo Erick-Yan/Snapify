@@ -12,6 +12,7 @@ class Users(db.Model):
     user_type = db.Column(db.String)
     user_followers = db.Column(db.Integer)
     user_image_id = db.Column(db.String)
+    user_page_id = db.Column(db.String)
 
     def __repre__(cls):
         return f"<User {cls.user_id}>"
@@ -29,6 +30,7 @@ class Users(db.Model):
         user_type,
         user_followers,
         user_image_id,
+        user_page_id,
     ):
         new_user = Users(
             user_id=user_id,
@@ -37,6 +39,7 @@ class Users(db.Model):
             user_type=user_type,
             user_followers=user_followers,
             user_image_id=user_image_id,
+            user_page_id=user_page_id,
         )
         try:
             db.session.add(new_user)
@@ -55,6 +58,7 @@ class Users(db.Model):
             "user_type": self.user_type,
             "user_followers": self.user_followers,
             "user_image_id": self.user_image_id,
+            "user_page_id": self.user_page_id,
         }
         return user_dict
 

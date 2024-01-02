@@ -1,11 +1,8 @@
 from flask import (
     Blueprint,
-    url_for,
     session,
     redirect,
     request,
-    jsonify,
-    abort,
     make_response,
 )
 from dotenv import load_dotenv
@@ -13,6 +10,7 @@ import os
 import sys
 import logging
 import jwt
+import uuid
 
 # sys.path is a list of absolute path strings
 sys.path.insert(0, "../../api/utils.py")
@@ -43,10 +41,12 @@ def logout():
 @auth_bp.route("/auth/check_auth", methods=["GET"])
 def check_auth():
     # Create JWT Token
+    user = Users.fetch_user_by_user_id(session.get("user_id"))
     token_payload = {
         "user_id": session.get("user_id"),
         "token": session.get("token"),
         "token_expiration": session.get("token_expiration") or -1,
+        "profile_url": user.user_page_id if user else "",
     }
     token = jwt.encode(token_payload, SECRET_KEY, algorithm="HS256")
     return token, 200
@@ -117,6 +117,7 @@ def redirect_page():
                     ),
                     user_followers=current_user["followers"]["total"],
                     user_image_id=current_user["images"][1]["url"],
+                    user_page_id=uuid.uuid4(),
                 )
                 logging.info(f"New user created: {new_user}")
             logging.info("New User Log In: " + session["user_id"])

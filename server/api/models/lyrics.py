@@ -1,4 +1,5 @@
 import logging
+import uuid
 from ..extensions import db
 
 
@@ -20,8 +21,8 @@ class Lyrics(db.Model):
         try:
             new_lyrics = cls(
                 user_id=user_id,
-                lyric_id=lyric_data.get("lyric_id"),
-                lyrics=lyric_data.get("lyrics"),
+                lyric_id=uuid.uuid4(),
+                lyrics=lyric_data,
             )
             db.session.add(new_lyrics)
             db.session.commit()
