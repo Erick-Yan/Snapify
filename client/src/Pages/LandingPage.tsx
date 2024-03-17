@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CheckAuthMutation } from "../API Modules/checkAuth";
 import { useSelector } from 'react-redux';
-import { Button, LinearProgress, Stack } from "@mui/material";
+import { Button, LinearProgress, Stack, Link } from "@mui/material";
 import HomeIcon from '@mui/icons-material/Home';
 import MessageIcon from '@mui/icons-material/Message';
 import GitHubIcon from '@mui/icons-material/GitHub'
@@ -20,11 +20,11 @@ function LandingPage() {
 
     useEffect(() => {
         checkAuth();
-        console.log(isLoggedIn, isSuccess)
     }, []);
 
     const handleShare = () => {
-        const generatedUrl = `https://localhost:5000/app/${profileUrl}`;
+        const generatedUrl = `localhost:5000/app/public/${profileUrl}`;
+        // https://localhost:5000/app/public/15baa2df-7d71-4627-83de-1756234baf26
 
         navigator.clipboard.writeText(generatedUrl)
             .then(() => {
@@ -59,11 +59,15 @@ function LandingPage() {
                 {isSuccess && isLoggedIn && (
                     <Stack direction="column" spacing={2}>
                         <SpotifyButton text="LOGOUT" href={LOGOUT_URI} color="white" />
-                        <SpotifyButton clickButton={() => navigate(`/app/${userId}/profile`)} text="EDIT PROFILE" color="green" />
-                        <SpotifyButton clickButton={handleShare} text="COPY PROFILE" color="green" />
-                        <a style={{color: "grey"}} href="https://github.com/Erick-Yan/Snapify" target="_blank" rel="noreferrer">
-                            <GitHubIcon />
-                        </a>
+                        <SpotifyButton clickButton={() => navigate(`/app/profile/${userId}`)} text="EDIT PROFILE" color="green" />
+                        <div style={{marginBottom: "12px"}}>
+                            <SpotifyButton clickButton={handleShare} text="COPY PROFILE" color="green" />
+                        </div>
+                        <div style={{ display: 'inline-block', width: 'fit-content', margin: "auto" }}> {/* Container to control width */}
+                            <Link href="https://github.com/Erick-Yan/Snapify" target="_blank">
+                                <GitHubIcon />
+                            </Link>
+                        </div>
                         {showNotification && (
                             <div className={`notification ${showNotification ? 'show' : ''}`}>
                                 <p>URL copied to clipboard!</p>

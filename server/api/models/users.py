@@ -7,12 +7,13 @@ class Users(db.Model):
     __tablename__ = "users"
     user_id = db.Column(db.String, primary_key=True, nullable=False)
     user_name = db.Column(db.String)
-    join_date = db.Column(db.DateTime, default=datetime.utcnow)
+    join_date = db.Column(db.DateTime, default=datetime.now())
     user_country = db.Column(db.String)
     user_type = db.Column(db.String)
     user_followers = db.Column(db.Integer)
     user_image_id = db.Column(db.String)
     user_page_id = db.Column(db.String)
+    user_last_login = db.Column(db.DateTime, default=datetime.now())
 
     def __repre__(cls):
         return f"<User {cls.user_id}>"
@@ -20,6 +21,21 @@ class Users(db.Model):
     @classmethod
     def fetch_user_by_user_id(cls, user_id: str):
         return cls.query.filter_by(user_id=user_id).first()
+
+    @classmethod
+    def fetch_user_by_public_page_id(cls, user_page_id: str):
+        return cls.query.filter_by(user_page_id=user_page_id).first()
+
+    @classmethod
+    def update_last_login(cls, user_id):
+        user = cls.query.get(user_id)
+        if user:
+            user.user_last_login = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            db.session.commit()
+            logging.info("Updated user_id={} user_last_login!", user.user_id)
+            return True
+        logging.warning("Failed to update user_id={} user_last_login!")
+        return False
 
     @classmethod
     def create_user(

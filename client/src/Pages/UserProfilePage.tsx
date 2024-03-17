@@ -25,6 +25,7 @@ function UserProfilePage() {
 
     useEffect(() => {
         if (data) {
+            console.log(data)
             setProfile(data.metadata)
             setInputtedLyrics(data.lyrics?.lyrics || '')
             setSelectedTrack(data.song || null)
@@ -143,10 +144,18 @@ function UserProfilePage() {
     }
 
     if (profile === null || isLoading) {
-        console.log("Here")
         return (
             <Stack>
-                <LinearProgress />
+                <LinearProgress
+                    sx={{
+                        '&.MuiLinearProgress-root': {
+                            backgroundColor: '#040306',
+                        },
+                        '& .MuiLinearProgress-bar': {
+                            backgroundColor: '#1DB954',
+                        },
+                    }}
+                />
             </Stack>
         )
     }

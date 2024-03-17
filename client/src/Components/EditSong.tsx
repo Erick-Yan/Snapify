@@ -15,10 +15,6 @@ function EditSong({handleUpdateTrack, song}: EditSongProps) {
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    console.log(searchResults)
-  }, [searchResults])
-
   const handleOpenEdit = () => {
     setIsEditing(true);
   };
@@ -77,7 +73,16 @@ function EditSong({handleUpdateTrack, song}: EditSongProps) {
             />
               <SpotifyButton text="SEARCH" color="green" clickButton={handleSearch} />
               <List className='display-results'>
-                  {isLoading && <LinearProgress />}
+                  {isLoading && <LinearProgress
+                        sx={{
+                            '&.MuiLinearProgress-root': {
+                                backgroundColor: '#040306',
+                            },
+                            '& .MuiLinearProgress-bar': {
+                                backgroundColor: '#1DB954',
+                            },
+                        }}
+                    />}
                   {searchResults.map((item, index) => {
                     return (
                       <>

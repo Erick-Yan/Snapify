@@ -107,7 +107,8 @@ def redirect_page():
         try:
             current_user = getUserInformation(session)
             session["user_id"] = current_user["id"]
-            if not Users().fetch_user_by_user_id(user_id=current_user["id"]):
+            user = Users().fetch_user_by_user_id(user_id=current_user["id"])
+            if not user:
                 new_user = Users().create_user(
                     user_id=current_user["id"],
                     user_name=current_user["display_name"],
@@ -120,6 +121,7 @@ def redirect_page():
                     user_page_id=uuid.uuid4(),
                 )
                 logging.info(f"New user created: {new_user}")
+            Users().update_last_login(user.user_id)
             logging.info("New User Log In: " + session["user_id"])
         except Exception as e:
             logging.error("Failed to Authenticate User: Failed to retrieve user info")

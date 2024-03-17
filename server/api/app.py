@@ -42,9 +42,9 @@ def create_app(config_name="production"):
         static_url_path="/",
         template_folder="server/api/templates/admin",
     )
-    app.config[
-        "SQLALCHEMY_DATABASE_URI"
-    ] = "postgresql://postgres:StartingSmthnggN3ww@localhost:5432/snapify"
+    app.config["SQLALCHEMY_DATABASE_URI"] = (
+        "postgresql://postgres:StartingSmthnggN3ww@localhost:5432/snapify"
+    )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
     app.logger.propagate = False
     app.logger.handlers.clear()

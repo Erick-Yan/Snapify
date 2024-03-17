@@ -56,7 +56,6 @@ function EditArtists({handleUpdateArtists, artists}: EditArtistsProps) {
         <div>
           <SpotifyButton text="EDIT" color="green" clickButton={handleOpenEdit} />
           <List>
-            <Divider style={{backgroundColor: "#1DB954"}} />
             {artists.map((item, index) => {
               return (
                 <>
@@ -83,7 +82,16 @@ function EditArtists({handleUpdateArtists, artists}: EditArtistsProps) {
             />
               <SpotifyButton text="SEARCH" color="green" clickButton={handleSearch} />
               <List className='display-results'>
-                  {isLoading && <LinearProgress />}
+                  {isLoading && <LinearProgress
+                        sx={{
+                            '&.MuiLinearProgress-root': {
+                                backgroundColor: '#040306',
+                            },
+                            '& .MuiLinearProgress-bar': {
+                                backgroundColor: '#1DB954',
+                            },
+                        }}
+                    />}
                   {searchResults.map((item, index) => {
                   return (
                     <>

@@ -22,7 +22,6 @@ export const CheckAuthMutation = () => {
     onSuccess: (data) => {
       const token:jwtToken = jwt(data)
       if (token["user_id"] && token["token"] && token["expiration"] !== -1) {
-        console.log("Logging you in")
         dispatch({ type: "LOGIN_SUCCESS", payload: { token } });
       }
     },

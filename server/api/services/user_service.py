@@ -29,6 +29,25 @@ def get_user_profile():
         raise e
 
 
+def get_public_user_profile(user_page_id):
+    public_user_profile = Users.fetch_user_by_public_page_id(user_page_id)
+    if not public_user_profile:
+        logging.error("Failed to find public user")
+        raise Exception
+    try:
+        user_profile = {
+            "metadata": Users.user_to_dict(public_user_profile.user_id),
+            "lyrics": Lyrics.lyrics_to_dict(public_user_profile.user_id),
+            "song": Songs.song_to_dict(public_user_profile.user_id),
+            "artists": Artists.artists_to_dict(public_user_profile.user_id),
+            "playlist": Playlists.playlist_to_dict(public_user_profile.user_id),
+        }
+        return user_profile
+    except Exception as e:
+        logging.error("Failed to fetch public user profile: ", e)
+        raise e
+
+
 def get_spotify_tracks(track_name):
     try:
         url = f"https://api.spotify.com/v1/search?q={track_name}&type=track"
