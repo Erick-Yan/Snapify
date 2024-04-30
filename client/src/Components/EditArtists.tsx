@@ -81,7 +81,7 @@ function EditArtists({handleUpdateArtists, artists}: EditArtistsProps) {
               fullWidth
             />
               <SpotifyButton text="SEARCH" color="green" clickButton={handleSearch} />
-              <List className='display-results'>
+              {(searchResults.length >= 1 || isLoading) && <List className='display-results'>
                   {isLoading && <LinearProgress
                         sx={{
                             '&.MuiLinearProgress-root': {
@@ -106,7 +106,7 @@ function EditArtists({handleUpdateArtists, artists}: EditArtistsProps) {
                     </>
                   )
                   })}
-              </List>
+              </List>}
               <List>
                   {artists.map((item, index) => {
                     return (

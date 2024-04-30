@@ -1,14 +1,15 @@
-import React from "react";
-import { Divider, List, ListItem, Stack, Typography } from "@mui/material";
-import PublicIcon from '@mui/icons-material/Public';
-import PersonIcon from '@mui/icons-material/Person';
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import React, { useState } from "react";
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, List, ListItem, Stack } from "@mui/material";
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import LyricsIcon from '@mui/icons-material/Lyrics';
 import QueueMusicIcon from '@mui/icons-material/QueueMusic';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import InterpreterModeIcon from '@mui/icons-material/InterpreterMode';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import './ViewProfile.css'
+import SpotifyButton from "./SpotifyButton";
 
 interface ViewProfileProps {
     profile: any
@@ -16,6 +17,9 @@ interface ViewProfileProps {
     song: any
     artists: any[]
     playlist: any
+    songMatches?: Boolean
+    artistsMatches?: any[]
+    playlistSongMatches?: any[]
 }
 
 function ViewProfile({
@@ -23,8 +27,23 @@ function ViewProfile({
     lyrics,
     song,
     artists,
-    playlist}: ViewProfileProps) {
-        return (
+    playlist,
+    songMatches,
+    artistsMatches,
+    playlistSongMatches
+}: ViewProfileProps) {
+    const [viewPlaylistMatches, setViewPlaylistMatches] = useState(false);
+
+    const handleOpenPlaylistMatchView = () => {
+        setViewPlaylistMatches(true);
+    }
+
+    const handleClosePlaylistMatchView = () => {
+        setViewPlaylistMatches(false);
+    }
+
+    return (
+        <>
             <Stack className="frame" spacing={4}>
                 <img className="profile-photo" src={profile.user_image_id} alt="" />
                 {lyrics && <div className="view-box">
@@ -34,28 +53,15 @@ function ViewProfile({
                     </div>
                     <p style={{fontSize: "60px", marginTop: "0", marginBottom: "0", fontWeight: "lighter"}}>{lyrics}</p>
                 </div>}
-                <div className="view-box details">
-                    <List>
-                        <ListItem>
-                            <PublicIcon style={{marginRight: "8px"}} />
-                            <h4 style={{marginTop: "0", marginBottom: "0", fontWeight: "normal"}}>{profile.user_country}</h4>
-                        </ListItem>
-                        <Divider style={{backgroundColor: "white"}} />
-                        <ListItem>
-                            <PersonIcon style={{marginRight: "8px"}} />
-                            <h4 style={{marginTop: "0", marginBottom: "0", fontWeight: "normal"}}>{profile.user_type}</h4>
-                        </ListItem>
-                        <Divider style={{backgroundColor: "white"}} />
-                        <ListItem>
-                            <GroupAddIcon style={{marginRight: "8px"}} />
-                            <h4 style={{marginTop: "0", marginBottom: "0", fontWeight: "normal"}}>{profile.user_followers} Followers</h4>
-                        </ListItem>
-                    </List>
-                </div>
                 {song && <div className="view-box spotifyModal">
                     <div className="box-title">
                         <PlayCircleFilledIcon className="icon" />
                         <h3 className="title">I'm listening to</h3>
+                        {songMatches && <Tooltip sx={{marginLeft: 'auto'}} title="Match!" arrow>
+                            <IconButton aria-label="add to favorites">
+                                <FavoriteIcon />
+                            </IconButton>
+                        </Tooltip>}
                     </div>
                     <List>
                         <iframe 
@@ -81,6 +87,11 @@ function ViewProfile({
                                 <img style={{borderRadius: "4"}} src={artist.artist_image_id} alt="" className="image" />
                                 <h4 style={{marginRight: "12px"}}>{artist.artist_name}</h4>
                                 <p style={{color: "#43464B", fontWeight: "500"}}>{artist.artist_genres}</p>
+                                {(artistsMatches && artistsMatches[index]) && <Tooltip sx={{marginLeft: 'auto'}} title="Match!" arrow>
+                                    <IconButton aria-label="add to favorites">
+                                        <FavoriteIcon />
+                                    </IconButton>
+                                </Tooltip>}
                             </ListItem>
                             {index !== artists.length - 1 && <Divider style={{backgroundColor: "white"}} />}
                             </>
@@ -92,7 +103,17 @@ function ViewProfile({
                         <QueueMusicIcon className="icon" />
                         <h3 className="title">Dive into my taste</h3>
                     </div>
-                    <p style={{color: "#43464B", marginTop: "0", marginBottom: "0", fontWeight: "lighter"}}>{playlist.playlist_description}</p>
+                    {playlistSongMatches && playlistSongMatches.length > 0 && 
+                        <div className="box-title" style={{marginBottom: "-15px", marginTop: "-15px"}}>
+                            <Tooltip title="Match!" arrow>
+                                <IconButton aria-label="add to favorites">
+                                    <FavoriteIcon />
+                                </IconButton>
+                            </Tooltip>
+                            <p style={{color: "#43464B", fontWeight: "lighter"}}>You have <a style={{color: "white"}} href="#" onClick={handleOpenPlaylistMatchView}>{playlistSongMatches.length}</a> matches</p>
+                        </div>
+                    }
+                    {/* <p style={{color: "#43464B", marginTop: "0", marginBottom: "0", fontWeight: "lighter"}}>{playlist.playlist_description}</p> */}
                     <List>
                         <iframe 
                             title="" 
@@ -106,7 +127,47 @@ function ViewProfile({
                     </List>
                 </div>}
             </Stack>
-        );
+            <Dialog open={viewPlaylistMatches} onClose={handleClosePlaylistMatchView} maxWidth="xs">
+                <DialogTitle sx={{paddingY: "0", backgroundColor: "#1DB954", color: "white"}}><h2>Matched Playlist Tracks</h2></DialogTitle>
+                    <DialogContent sx={{backgroundColor: "#181818"}} >
+                        <DialogContentText>
+                            {playlistSongMatches && <List>
+                                {playlistSongMatches.map((song, index) => {
+                                    return (
+                                        <>
+                                            <ListItem key={index}>
+                                                <img src={song.track_image_url} alt="" className="image" />
+                                                <h4 style={{color: "white"}}>{song.track_name}</h4>
+                                            </ListItem>
+                                            {index !== playlistSongMatches.length - 1 && <Divider style={{backgroundColor: "white"}} />}
+                                        </>
+                                    )
+                                })}
+                            </List>}
+                        </DialogContentText>
+                    </DialogContent>
+                <DialogActions style={{display: "flex", flexDirection: "column", backgroundColor: "#1DB954" }}>
+                    <SpotifyButton text="DONE" color="white" clickButton={handleClosePlaylistMatchView} />
+                </DialogActions>
+            </Dialog>
+            <Tooltip title="Follow" arrow>
+                <IconButton
+                    aria-label="follow"
+                    className="follow-button"
+                    // onClick={handleFollow}
+                    sx={{
+                        position: 'fixed',
+                        bottom: 20,
+                        right: 20,
+                        color: "#1DB954",
+                        borderRadius: '50%'
+                    }}
+                >
+                    <PersonAddAltIcon sx={{color: "white", backgroundColor: "#1DB954", padding: "15px", borderRadius: "20px"}} />
+                </IconButton>
+            </Tooltip>
+        </>
+    );
 };
 
 

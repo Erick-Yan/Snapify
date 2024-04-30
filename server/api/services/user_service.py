@@ -17,7 +17,7 @@ from api.utils import makeGetRequest
 def get_user_profile():
     try:
         user_profile = {
-            "metadata": Users.user_to_dict(session["user_id"]),
+            "metadata": Users.user_to_dict(session),
             "lyrics": Lyrics.lyrics_to_dict(session["user_id"]),
             "song": Songs.song_to_dict(session["user_id"]),
             "artists": Artists.artists_to_dict(session["user_id"]),
@@ -34,9 +34,10 @@ def get_public_user_profile(user_page_id):
     if not public_user_profile:
         logging.error("Failed to find public user")
         raise Exception
+
     try:
         user_profile = {
-            "metadata": Users.user_to_dict(public_user_profile.user_id),
+            "metadata": Users.public_user_to_dict(session, public_user_profile.user_id),
             "lyrics": Lyrics.lyrics_to_dict(public_user_profile.user_id),
             "song": Songs.song_to_dict(public_user_profile.user_id),
             "artists": Artists.artists_to_dict(public_user_profile.user_id),
@@ -45,6 +46,65 @@ def get_public_user_profile(user_page_id):
         return user_profile
     except Exception as e:
         logging.error("Failed to fetch public user profile: ", e)
+        raise e
+
+
+def get_public_user_profile_matches(user_page_id):
+    public_user_profile = Users.fetch_user_by_public_page_id(user_page_id)
+    if not public_user_profile:
+        logging.error("Failed to find public user")
+        raise Exception
+
+    # Check for matching song.
+    song_match = (
+        Songs.song_to_dict(session["user_id"]).get("song_id")
+        == Songs.song_to_dict(public_user_profile.user_id).get("song_id")
+        if Songs.fetch_song_by_user_id(session["user_id"])
+        and Songs.fetch_song_by_user_id(public_user_profile.user_id)
+        else False
+    )
+
+    # Check for matching artists.
+    artists_matches = []
+    current_user_artists = Artists.artists_to_dict(session["user_id"])
+    public_user_artists = Artists.artists_to_dict(public_user_profile.user_id)
+    for artist1 in public_user_artists:
+        for artist2 in current_user_artists:
+            if artist1["artist_id"] == artist2["artist_id"]:
+                artists_matches.append(
+                    {
+                        "artist_name": artist1["artist_name"],
+                        "artist_image_id": artist1["artist_image_id"],
+                    }
+                )
+
+    # Check for matching playlist songs.
+    playlist_song_matches = []
+    current_user_playlist_songs = _get_playlist_items(
+        Playlists.fetch_playlist_by_user_id(session["user_id"]).playlist_id
+    )
+    public_user_playlist_songs = _get_playlist_items(
+        Playlists.fetch_playlist_by_user_id(public_user_profile.user_id).playlist_id
+    )
+    for song1 in current_user_playlist_songs:
+        for song2 in public_user_playlist_songs:
+            if song1["track"]["id"] == song2["track"]["id"]:
+                playlist_song_matches.append(
+                    {
+                        "track_name": song1["track"]["name"],
+                        "track_image_url": song1["track"]["album"]["images"][0]["url"],
+                    }
+                )
+
+    try:
+        public_user_profile_matches = {
+            "song_match": song_match,
+            "artists_matches": artists_matches,
+            "playlist_song_matches": playlist_song_matches,
+        }
+        return public_user_profile_matches
+    except Exception as e:
+        logging.error("Failed to fetch public user profile matches: ", e)
         raise e
 
 
@@ -63,9 +123,11 @@ def get_spotify_tracks(track_name):
                     "song_id": track.get("id"),
                     "song_name": track.get("name"),
                     "song_artists": _parse_artists(track.get("artists")),
-                    "song_image_id": track.get("album").get("images")[0].get("url")
-                    if track.get("album") and track.get("album").get("images")
-                    else None,
+                    "song_image_id": (
+                        track.get("album").get("images")[0].get("url")
+                        if track.get("album") and track.get("album").get("images")
+                        else None
+                    ),
                 }
             )
 
@@ -95,9 +157,11 @@ def get_spotify_artists(artist_name):
                 {
                     "user_id": session["user_id"],
                     "artist_id": artist.get("id"),
-                    "artist_image_id": artist.get("images")[0].get("url")
-                    if artist.get("images")
-                    else None,
+                    "artist_image_id": (
+                        artist.get("images")[0].get("url")
+                        if artist.get("images")
+                        else None
+                    ),
                     "artist_name": artist.get("name"),
                     "artist_genres": ", ".join(artist.get("genres")),
                 }
@@ -132,9 +196,11 @@ def get_user_playlists():
                         "user_id": session["user_id"],
                         "playlist_id": playlist.get("id"),
                         "playlist_name": playlist.get("name"),
-                        "playlist_image_id": playlist.get("images")[0].get("url")
-                        if playlist.get("images")
-                        else None,
+                        "playlist_image_id": (
+                            playlist.get("images")[0].get("url")
+                            if playlist.get("images")
+                            else None
+                        ),
                         "playlist_description": playlist.get("description"),
                     }
                 )
@@ -164,4 +230,24 @@ def save_user_profile(lyrics, song, artists, playlist):
             Playlists.create_playlist(session["user_id"], playlist)
     except Exception as e:
         logging.error("Failed to save user profile: ", e)
+        raise e
+
+
+def _get_playlist_items(playlist_id):
+    try:
+        playlist_items = []
+        prev_len = -1
+        offset = 0
+        INCREMENT = 50
+        while len(playlist_items) > prev_len:
+            prev_len = len(playlist_items)
+            url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?limit=50&offset={offset}"
+            payload = makeGetRequest(session, url)
+            if payload == None:
+                break
+            playlist_items.extend(payload.get("items"))
+            offset += INCREMENT
+        return playlist_items
+    except Exception as e:
+        logging.error("Failed to retrieve current user's followed artists: ", e)
         raise e

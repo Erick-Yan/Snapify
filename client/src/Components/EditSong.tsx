@@ -72,7 +72,7 @@ function EditSong({handleUpdateTrack, song}: EditSongProps) {
               fullWidth
             />
               <SpotifyButton text="SEARCH" color="green" clickButton={handleSearch} />
-              <List className='display-results'>
+              {(searchResults.length >= 1 || isLoading) && <List className='display-results'>
                   {isLoading && <LinearProgress
                         sx={{
                             '&.MuiLinearProgress-root': {
@@ -98,7 +98,7 @@ function EditSong({handleUpdateTrack, song}: EditSongProps) {
                       </>
                     )
                   })}
-              </List>
+              </List>}
               {song && <List>
                 <ListItem key={1}>
                     <img src={song.song_image_id} alt="" className="image" />

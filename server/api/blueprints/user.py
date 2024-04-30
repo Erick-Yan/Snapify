@@ -13,6 +13,7 @@ from api.wrapper_utils import login_required
 sys.path.insert(0, "../../api/services")
 from api.services.user_service import (
     get_public_user_profile,
+    get_public_user_profile_matches,
     get_spotify_artists,
     get_user_playlists,
     get_user_profile,
@@ -39,11 +40,21 @@ def get_profile():
 
 
 @user_bp.route("/user/get_public_profile", methods=["GET"])
+@login_required
 def get_public_profile():
     public_id = request.args.get("public_id")
     public_user_profile = get_public_user_profile(public_id)
     print("get_public_profile: ", public_user_profile)
     return jsonify(public_user_profile), 200
+
+
+@user_bp.route("/user/get_public_profile_matches", methods=["GET"])
+@login_required
+def get_public_profile_matches():
+    public_id = request.args.get("public_id")
+    public_user_profile_matches = get_public_user_profile_matches(public_id)
+    print("get_public_profile_matches: ", public_user_profile_matches)
+    return jsonify(public_user_profile_matches), 200
 
 
 @user_bp.route("/user/get_track", methods=["GET"])

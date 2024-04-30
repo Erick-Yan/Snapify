@@ -1,17 +1,16 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
+import sys
+
+sys.path.insert(0, "../../api/utils.py")
+from api.utils import getUserInformation, getPublicUserInformation
 from ..extensions import db
 
 
 class Users(db.Model):
     __tablename__ = "users"
     user_id = db.Column(db.String, primary_key=True, nullable=False)
-    user_name = db.Column(db.String)
     join_date = db.Column(db.DateTime, default=datetime.now())
-    user_country = db.Column(db.String)
-    user_type = db.Column(db.String)
-    user_followers = db.Column(db.Integer)
-    user_image_id = db.Column(db.String)
     user_page_id = db.Column(db.String)
     user_last_login = db.Column(db.DateTime, default=datetime.now())
 
@@ -41,20 +40,10 @@ class Users(db.Model):
     def create_user(
         cls,
         user_id,
-        user_name,
-        user_country,
-        user_type,
-        user_followers,
-        user_image_id,
         user_page_id,
     ):
         new_user = Users(
             user_id=user_id,
-            user_name=user_name,
-            user_country=user_country,
-            user_type=user_type,
-            user_followers=user_followers,
-            user_image_id=user_image_id,
             user_page_id=user_page_id,
         )
         try:
@@ -67,20 +56,29 @@ class Users(db.Model):
 
         return new_user
 
-    def to_dict(self):
+    def to_dict(self, user_data):
         user_dict = {
-            "user_name": self.user_name,
-            "user_country": self.user_country,
-            "user_type": self.user_type,
-            "user_followers": self.user_followers,
-            "user_image_id": self.user_image_id,
+            "user_name": user_data["display_name"],
+            "user_followers": user_data["followers"]["total"],
+            "user_image_id": user_data["images"][1]["url"],
             "user_page_id": self.user_page_id,
+            "user_active": datetime.now() - self.user_last_login
+            <= timedelta(minutes=5),
         }
         return user_dict
 
     @classmethod
-    def user_to_dict(cls, user_id):
-        user = cls.fetch_user_by_user_id(user_id)
+    def user_to_dict(cls, session):
+        user = cls.fetch_user_by_user_id(session["user_id"])
+        user_data = getUserInformation(session)
         if user:
-            return user.to_dict()
+            return user.to_dict(user_data)
+        return None
+
+    @classmethod
+    def public_user_to_dict(cls, session, public_user_id):
+        user = cls.fetch_user_by_user_id(public_user_id)
+        user_data = getPublicUserInformation(session, public_user_id)
+        if user:
+            return user.to_dict(user_data)
         return None

@@ -111,13 +111,6 @@ def redirect_page():
             if not user:
                 new_user = Users().create_user(
                     user_id=current_user["id"],
-                    user_name=current_user["display_name"],
-                    user_country=current_user["country"],
-                    user_type=create_user_type(
-                        current_user["product"], current_user["type"]
-                    ),
-                    user_followers=current_user["followers"]["total"],
-                    user_image_id=current_user["images"][1]["url"],
                     user_page_id=uuid.uuid4(),
                 )
                 logging.info(f"New user created: {new_user}")
@@ -128,7 +121,3 @@ def redirect_page():
             raise e
 
     return redirect("http://localhost:5000/app")
-
-
-def create_user_type(product: str, type: str):
-    return product.capitalize() + " " + type.capitalize()
