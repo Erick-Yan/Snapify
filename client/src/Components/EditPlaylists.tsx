@@ -57,8 +57,8 @@ function EditPlaylists({handleUpdatePlaylist, playlist}: EditPlaylistsProps) {
     if (searchTerm.trim() !== "") {
         setIsLoading(true)
         const filtered = searchResults.filter(
-        (item) =>
-            item.name.toLowerCase().includes(searchTerm.toLowerCase())
+          (item) =>
+              item.playlist_name.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredResults(filtered);
         setIsLoading(false)

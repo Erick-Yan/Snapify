@@ -48,6 +48,7 @@ def check_auth():
         "token_expiration": session.get("token_expiration") or -1,
         "profile_url": user.user_page_id if user else "",
     }
+    print("SECRET_KEY: ", SECRET_KEY)
     token = jwt.encode(token_payload, SECRET_KEY, algorithm="HS256")
     return token, 200
 

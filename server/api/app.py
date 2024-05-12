@@ -1,6 +1,5 @@
 from os import environ
 from flask import Flask, request
-from flask_sqlalchemy import SQLAlchemy
 from requests import get
 import os
 import sys
@@ -12,8 +11,7 @@ from .blueprints.user import user_bp
 from .extensions import db
 
 IS_DEV = environ["FLASK_ENV"] == "development"
-WEBPACK_DEV_SERVER_HOST = "http://localhost:3000"
-
+WEBPACK_DEV_SERVER_HOST = "http://host.docker.internal:3000"
 
 def proxy(host, path):
     response = get(f"{host}{path}")
@@ -42,9 +40,8 @@ def create_app(config_name="production"):
         static_url_path="/",
         template_folder="server/api/templates/admin",
     )
-    app.config["SQLALCHEMY_DATABASE_URI"] = (
-        "postgresql://postgres:StartingSmthnggN3ww@localhost:5432/snapify"
-    )
+    app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:9343@database:5432/snapify"
+
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
     app.logger.propagate = False
     app.logger.handlers.clear()
@@ -101,4 +98,4 @@ def create_app(config_name="production"):
 if __name__ == "__main__":
     app = create_app()
     port = int(os.getenv("PORT"), 5000)
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="localhost", port=port, debug=True)
