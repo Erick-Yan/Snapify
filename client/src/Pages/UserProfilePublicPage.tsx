@@ -6,6 +6,7 @@ import ViewProfile from "../Components/ViewProfile";
 import { useGetPublicUserProfile } from "../API Modules/getPublicUserProfile";
 import { useGetPublicUserProfileMatches } from "../API Modules/getPublicUserProfileMatches";
 import UserHeader from "../Components/UserHeader";
+import { followUser } from "../API Modules/followUser";
 
 function UserProfilePublicPage() {
     const { publicId } = useParams();
@@ -15,8 +16,10 @@ function UserProfilePublicPage() {
     const publicUserProfileLoading = getPublicUserProfileQuery.isLoading
     const publicUserProfileError = getPublicUserProfileQuery.error
     const publicUserProfileMatchesData = getPublicUserProfileMatchesQuery.data
-    // const publicUserProfileMatchesLoading = getPublicUserProfileMatchesQuery.isLoading
-    // const publicUserProfileMatchesError = getPublicUserProfileMatchesQuery.error
+    
+    const handleFollow = async () => {
+        return followUser({"user_page_id": publicId});
+    };
 
     const navigate = useNavigate()
 
@@ -28,6 +31,7 @@ function UserProfilePublicPage() {
     const [songMatches, setSongMatches] = useState<any>(false)
     const [artistMatches, setArtistsMatches] = useState<any[]>([])
     const [playlistSongMatches, setPlaylistSongMatches] = useState<any[]>([])
+    const [following, setFollowing] = useState(false)
 
     useEffect(() => {
         if (publicUserProfileData) {
@@ -36,6 +40,7 @@ function UserProfilePublicPage() {
             setSong(publicUserProfileData.song || null)
             setArtists(publicUserProfileData.artists || [])
             setPlaylist(publicUserProfileData.playlist || null)
+            setFollowing(publicUserProfileData.following || false)
         }
         if (publicUserProfileMatchesData) {
             setSongMatches(publicUserProfileMatchesData.song_match)
@@ -74,9 +79,11 @@ function UserProfilePublicPage() {
                 song={song}
                 artists={artists}
                 playlist={playlist}
+                following={following}
                 songMatches={songMatches}
                 artistsMatches={artistMatches}
                 playlistSongMatches={playlistSongMatches}
+                handleFollow={handleFollow}
             />
         </div>
     );

@@ -8,8 +8,11 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import './ViewProfile.css'
 import SpotifyButton from "./SpotifyButton";
+import { useMutation } from "react-query";
+import { useNavigate } from "react-router-dom";
 
 interface ViewProfileProps {
     profile: any
@@ -17,9 +20,11 @@ interface ViewProfileProps {
     song: any
     artists: any[]
     playlist: any
+    following?: Boolean
     songMatches?: Boolean
     artistsMatches?: any[]
     playlistSongMatches?: any[]
+    handleFollow?: () => Promise<any>
 }
 
 function ViewProfile({
@@ -28,10 +33,13 @@ function ViewProfile({
     song,
     artists,
     playlist,
+    following,
     songMatches,
     artistsMatches,
-    playlistSongMatches
+    playlistSongMatches,
+    handleFollow
 }: ViewProfileProps) {
+    const navigate = useNavigate()
     const [viewPlaylistMatches, setViewPlaylistMatches] = useState(false);
 
     const handleOpenPlaylistMatchView = () => {
@@ -41,6 +49,19 @@ function ViewProfile({
     const handleClosePlaylistMatchView = () => {
         setViewPlaylistMatches(false);
     }
+
+    const defaultHandleFollow = async () => {
+        throw new Error('handleFollow function is not defined');
+    };
+
+    const handleFollowMutation = useMutation(handleFollow ?? defaultHandleFollow, {
+        onSuccess: (data) => {
+
+        },
+        onError: (error) => {
+            navigate("/app")
+        },
+    });
 
     return (
         <>
@@ -150,11 +171,11 @@ function ViewProfile({
                     <SpotifyButton text="DONE" color="white" clickButton={handleClosePlaylistMatchView} />
                 </DialogActions>
             </Dialog>
-            <Tooltip title="Follow" arrow>
+            {handleFollow && <Tooltip title={!following ? "Follow" : "Following"} arrow>
                 <IconButton
                     aria-label="follow"
                     className="follow-button"
-                    // onClick={handleFollow}
+                    onClick={() => !following && handleFollowMutation.mutate()}
                     sx={{
                         position: 'fixed',
                         bottom: 20,
@@ -163,9 +184,25 @@ function ViewProfile({
                         borderRadius: '50%'
                     }}
                 >
-                    <PersonAddAltIcon sx={{color: "white", backgroundColor: "#1DB954", padding: "15px", borderRadius: "20px"}} />
+                    {!following ? 
+                        <PersonAddAltIcon 
+                            sx={{
+                                color: "white", 
+                                backgroundColor: "#1DB954", 
+                                padding: "15px", 
+                                borderRadius: "20px"
+                            }} /> : 
+                        <CheckCircleIcon 
+                            sx={{
+                                color: "white", 
+                                backgroundColor: "#1DB954", 
+                                padding: "15px", 
+                                borderRadius: "20px"
+                            }} />
+                        
+                    }
                 </IconButton>
-            </Tooltip>
+            </Tooltip>}
         </>
     );
 };

@@ -8,6 +8,8 @@ import GitHubIcon from '@mui/icons-material/GitHub'
 import { useNavigate } from 'react-router-dom';
 import './LandingPage.css'
 import SpotifyButton from "../Components/SpotifyButton";
+import { useCheckFollowers } from "../API Modules/checkFollowers";
+import MarkUnreadChatAltIcon from '@mui/icons-material/MarkUnreadChatAlt';
 
 function LandingPage() {
     const navigate = useNavigate();
@@ -15,16 +17,22 @@ function LandingPage() {
     const LOGOUT_URI = "/auth/logout";
 
     const { mutate: checkAuth, isLoading, isSuccess } = CheckAuthMutation();
+    const checkFollowers = useCheckFollowers()
+    const checkFollowersData = checkFollowers.data
     const { isLoggedIn, userId, profileUrl } = useSelector((state:any) => state);
     const [showNotification, setShowNotification] = useState(false)
+    const [newFollowerCount, setNewFollowerCount] = useState(0)
 
     useEffect(() => {
         checkAuth();
-    }, []);
+        if(checkFollowersData) {
+            console.log(checkFollowersData)
+            setNewFollowerCount(checkFollowersData.new_follower_count || 0)
+        }
+    }, [checkFollowersData]);
 
     const handleShare = () => {
         const generatedUrl = `localhost:5000/app/public/${profileUrl}`;
-        // https://localhost:5000/app/public/15baa2df-7d71-4627-83de-1756234baf26
 
         navigator.clipboard.writeText(generatedUrl)
             .then(() => {
@@ -88,7 +96,7 @@ function LandingPage() {
                         className={"landing-nav-option"}
                         onClick={() => {}}
                     >
-                        <MessageIcon />
+                        {newFollowerCount === 0 ? <MessageIcon/> : <MarkUnreadChatAltIcon/>}
                     </div>
                 </div>
             )}

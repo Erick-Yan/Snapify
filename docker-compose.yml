@@ -46,7 +46,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: ErickYan
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 9343
       POSTGRES_DB: snapify
     volumes:

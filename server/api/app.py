@@ -80,6 +80,7 @@ def create_app(config_name="production"):
         from .models.users import Users
         from .models.songs import Songs
         from .models.playlists import Playlists
+        from .models.followers import Followers
 
         db.create_all()
         db.session.commit()

@@ -1,7 +1,7 @@
 from flask import session
 import logging
 import sys
-import uuid
+import datetime
 
 sys.path.insert(0, "../../api/models")
 from api.models.users import Users
@@ -9,9 +9,12 @@ from api.models.lyrics import Lyrics
 from api.models.songs import Songs
 from api.models.artists import Artists
 from api.models.playlists import Playlists
+from api.models.followers import Followers
+from api.producer import get_kafka_producer, publish
+from api.consumer import get_kafka_consumer, consume, check_messages
 
 sys.path.insert(0, "../../api/utils.py")
-from api.utils import makeGetRequest
+from api.utils import makeGetRequest, makePostRequest
 
 
 def get_user_profile():
@@ -34,6 +37,8 @@ def get_public_user_profile(user_page_id):
     if not public_user_profile:
         logging.error("Failed to find public user")
         raise Exception
+    
+    public_user_follower = Followers.fetch_follower_by_user_id(public_user_profile.user_id, session["user_id"])
 
     try:
         user_profile = {
@@ -42,6 +47,7 @@ def get_public_user_profile(user_page_id):
             "song": Songs.song_to_dict(public_user_profile.user_id),
             "artists": Artists.artists_to_dict(public_user_profile.user_id),
             "playlist": Playlists.playlist_to_dict(public_user_profile.user_id),
+            "following": public_user_follower != None
         }
         return user_profile
     except Exception as e:
@@ -105,6 +111,53 @@ def get_public_user_profile_matches(user_page_id):
         return public_user_profile_matches
     except Exception as e:
         logging.error("Failed to fetch public user profile matches: ", e)
+        raise e
+    
+
+def follow_user_by_id(user_page_id):
+    # Fetch user id.
+    public_user_profile = Users.fetch_user_by_public_page_id(user_page_id)
+    if not public_user_profile:
+        logging.error("Failed to find public user")
+        raise Exception
+    user_id = public_user_profile.user_id
+
+    # Follow user through PUT request.
+    try:
+        url = f"https://api.spotify.com/v1/me/following?type=user&ids={user_id}"
+        makePostRequest(session, url)
+    except Exception as e:
+        logging.error("Failed to follow user on Spotify: ", e)
+        raise e
+
+    # Produce message to user_follow kafka topic.
+    try:
+        producer = get_kafka_producer()
+        value = {
+            'follower_user_id': session["user_id"],
+            'followed_user_id': user_id,
+            'followed_date': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        publish(producer, "user_follow", key=user_id.encode('utf-8'), value=value)
+    except Exception as e:
+        raise e
+
+    # Save follower to DB.
+    try:
+        follower = Followers.fetch_follower_by_user_id(user_id, session["user_id"])
+        if not follower:
+            Followers.create_follower(user_id, session["user_id"])
+    except Exception as e:
+        logging.error("Failed to create follower in DB: ", e)
+        raise e
+    
+
+def check_followers_in_kafka():
+    try:
+        consumer = get_kafka_consumer("user_follow")
+        new_follower_count = check_messages(consumer, session["user_id"])
+        return {"new_follower_count": new_follower_count}
+    except Exception as e:
         raise e
 
 

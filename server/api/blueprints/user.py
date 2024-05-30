@@ -19,6 +19,8 @@ from api.services.user_service import (
     get_user_profile,
     get_spotify_tracks,
     save_user_profile,
+    follow_user_by_id,
+    check_followers_in_kafka
 )
 
 load_dotenv()
@@ -35,7 +37,7 @@ user_bp = Blueprint("user", __name__)
 @login_required
 def get_profile():
     user_profile = get_user_profile()
-    print("get_profile: ", user_profile)
+    # print("get_profile: ", user_profile)
     return jsonify(user_profile), 200
 
 
@@ -44,8 +46,25 @@ def get_profile():
 def get_public_profile():
     public_id = request.args.get("public_id")
     public_user_profile = get_public_user_profile(public_id)
-    print("get_public_profile: ", public_user_profile)
+    # print("get_public_profile: ", public_user_profile)
     return jsonify(public_user_profile), 200
+
+
+@user_bp.route("/user/follow", methods=["POST"])
+@login_required
+def follow_user():
+    public_id = request.args.get("public_id")
+    follow_user_by_id(public_id)
+    # print("follower_user: success")
+    return jsonify({}), 200
+
+
+@user_bp.route("/user/check_followers", methods=["GET"])
+@login_required
+def check_followers():
+    new_follower_count = check_followers_in_kafka()
+    print(f'check_followers: success, {new_follower_count}')
+    return jsonify(new_follower_count), 200
 
 
 @user_bp.route("/user/get_public_profile_matches", methods=["GET"])
@@ -53,7 +72,7 @@ def get_public_profile():
 def get_public_profile_matches():
     public_id = request.args.get("public_id")
     public_user_profile_matches = get_public_user_profile_matches(public_id)
-    print("get_public_profile_matches: ", public_user_profile_matches)
+    # print("get_public_profile_matches: ", public_user_profile_matches)
     return jsonify(public_user_profile_matches), 200
 
 
@@ -63,7 +82,7 @@ def get_tracks():
     track_name = request.args.get("track")
     tracks = get_spotify_tracks(track_name)
 
-    print("get_tracks: ", tracks)
+    # print("get_tracks: ", tracks)
     return jsonify(tracks), 200
 
 
@@ -73,7 +92,7 @@ def get_artists():
     artist_name = request.args.get("artist")
     artists = get_spotify_artists(artist_name)
 
-    print("get_artists: ", artists)
+    # print("get_artists: ", artists)
     return jsonify(artists), 200
 
 
@@ -82,7 +101,7 @@ def get_artists():
 def get_playlist():
     playlists = get_user_playlists()
 
-    print("get_playlist: ", playlists)
+    # print("get_playlist: ", playlists)
     return jsonify(playlists), 200
 
 
